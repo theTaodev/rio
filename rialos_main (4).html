@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RialOS — The Autonomous Finance OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#060606;--black2:#0c0c0c;--black3:#111111;--black4:#1a1a1a;
+  --orange:#f25c05;--orange2:#e04800;--orange3:#ff7a2e;
+  --white:#f5f0ea;--white2:#b8b0a6;--white3:#7a736b;
+  --border:rgba(242,92,5,0.15);--border2:rgba(245,240,234,0.08);
+  --mono:'Space Mono',monospace;
+  --head:'Syne',sans-serif;
+  --body:'Inter',sans-serif;
+  --alt:'Syne',sans-serif;
+}
+[data-theme="light"]{
+  --black:#faf9f7;--black2:#f2ede6;--black3:#ede7dd;--black4:#e4ddd2;
+  --white:#1a1410;--white2:#4a3f35;--white3:#8a7e74;
+  --border:rgba(242,92,5,0.25);--border2:rgba(26,20,16,0.1);
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--body);overflow-x:hidden;cursor:crosshair;font-feature-settings:"kern" 1,"liga" 1,"calt" 1;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--orange2);border-radius:2px}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.35}
+
+/* SCROLL PROGRESS BAR */
+.scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--orange);z-index:9999;width:0%;transition:width .1s linear;box-shadow:0 0 8px rgba(242,92,5,0.6)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 3rem;height:64px;background:rgba(6,6,6,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2)}
+.logo{font-family:var(--head);font-size:1.25rem;letter-spacing:2px;font-weight:800;text-transform:uppercase;color:var(--white);text-decoration:none}
+.logo span{color:var(--orange)}
+.nav-center{display:flex;gap:2.5rem;position:absolute;left:50%;transform:translateX(-50%)}
+.nav-center a{font-size:0.72rem;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--white3);text-decoration:none;transition:color .2s;font-family:var(--body)}
+.nav-center a:hover{color:var(--white)}
+.nav-right{display:flex;gap:1rem;align-items:center}
+.nav-tag{font-family:var(--mono);font-size:0.68rem;color:var(--orange);letter-spacing:1px;border:1px solid var(--border);padding:.3rem .7rem}
+.btn-nav{background:var(--orange);color:#000;font-size:0.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:.5rem 1.2rem;border:none;cursor:crosshair;text-decoration:none;transition:background .2s,transform .15s;display:inline-block}
+.btn-nav:hover{background:var(--orange3);transform:translateY(-1px)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 3rem 5rem;position:relative;overflow:hidden}
+.hero-eyebrow{font-family:var(--mono);font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s .2s ease forwards}
+.hero h1{
+  font-family:var(--head);
+  font-size:clamp(3rem,8vw,9.5rem);
+  line-height:0.92;
+  letter-spacing:-2px;
+  font-weight:800;
+  font-style:normal;
+  text-transform:uppercase;
+  margin-bottom:2.5rem;
+  word-break:keep-all;
+  white-space:normal;
+  overflow:visible;
+  opacity:0;
+  animation:fadeUp .9s .3s ease forwards;
+}
+.hero h1:hover{
+  text-shadow:0 0 40px rgba(242,92,5,0.15);
+  transition:text-shadow .4s;
+}
+.hero h1 em{font-style:normal;font-weight:800;-webkit-text-stroke:1.5px var(--white2);color:transparent;letter-spacing:-2px}
+.hero-bottom{display:flex;justify-content:space-between;align-items:flex-end;opacity:0;animation:fadeUp .9s .5s ease forwards}
+.hero-desc{max-width:400px;font-size:.88rem;line-height:1.75;color:var(--white2);font-weight:300}
+.hero-desc strong{color:var(--white);font-weight:500}
+.hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:1rem}
+.btn-primary{background:var(--orange);color:#000;font-size:.82rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.85rem 2rem;text-decoration:none;transition:background .2s,transform .15s;display:inline-flex;align-items:center;gap:.5rem}
+.btn-primary:hover{background:var(--orange3);transform:translateY(-2px)}
+.btn-ghost{font-size:.78rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--white3);text-decoration:none;border-bottom:1px solid var(--border2);padding-bottom:2px;transition:color .2s,border-color .2s}
+.btn-ghost:hover{color:var(--white);border-color:var(--white3)}
+.hero-counter{font-family:var(--mono);font-size:.65rem;color:var(--white3);letter-spacing:1px;margin-top:.5rem}
+.hero-lines{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-lines::before{content:'';position:absolute;right:-5%;top:10%;width:65vw;height:65vw;border-radius:50%;border:1px solid rgba(242,92,5,0.08);animation:spin 40s linear infinite}
+.hero-lines::after{content:'';position:absolute;right:5%;top:20%;width:40vw;height:40vw;border-radius:50%;border:1px solid rgba(242,92,5,0.05);animation:spin 25s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-grid-lines{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(242,92,5,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(242,92,5,0.04) 1px,transparent 1px);background-size:80px 80px}
+
+/* TICKER */
+.ticker{border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);overflow:hidden;background:var(--black2);height:44px;display:flex;align-items:center}
+.ticker-inner{display:flex;animation:tickerMove 28s linear infinite;white-space:nowrap}
+.ticker-item{display:flex;align-items:center;gap:.6rem;padding:0 2.5rem;font-family:var(--mono);font-size:.68rem;letter-spacing:1px;color:var(--white3);border-right:1px solid var(--border2);flex-shrink:0}
+.ticker-item span{color:var(--orange)}
+@keyframes tickerMove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTION */
+section{padding:7rem 3rem}
+.section-label{font-family:var(--head);font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--orange);display:flex;align-items:center;gap:.8rem;margin-bottom:2.5rem;font-weight:700}
+.section-label::before{content:'';display:block;width:20px;height:1px;background:var(--orange)}
+.section-num{color:var(--white3);font-family:var(--mono);font-size:.6rem}
+h2.display{font-family:var(--head);font-size:clamp(2.8rem,6vw,7.5rem);line-height:0.9;letter-spacing:-2px;font-weight:800;font-style:normal;text-transform:uppercase;margin-bottom:3rem;word-break:keep-all;overflow:visible}
+h2.display em{font-style:normal;font-weight:800;-webkit-text-stroke:1.5px var(--white3);color:transparent;letter-spacing:-2px}
+.rule{height:1px;background:var(--border2);margin:0 3rem}
+
+/* ABOUT */
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+.intro-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border2);border:1px solid var(--border2);margin-top:2rem}
+.stat-box{background:var(--black2);padding:2rem 1.5rem}
+.stat-box .num{font-family:var(--head);font-size:3.5rem;color:var(--white);line-height:1;display:block}
+.stat-box .num span{color:var(--orange)}
+.stat-box .lbl{font-size:.72rem;color:var(--white3);letter-spacing:1px;text-transform:uppercase;margin-top:.5rem}
+.intro-modules{display:flex;flex-direction:column}
+.module-row{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 0;border-bottom:1px solid var(--border2);transition:padding .2s;cursor:default}
+.module-row:first-child{border-top:1px solid var(--border2)}
+.module-row:hover{padding-left:.8rem}
+.module-left{display:flex;align-items:center;gap:1rem}
+.module-num{font-family:var(--mono);font-size:.62rem;color:var(--white3);width:24px}
+.module-name{font-size:.9rem;font-weight:500}
+.module-tag{font-family:var(--mono);font-size:.6rem;color:var(--orange);letter-spacing:1px;border:1px solid var(--border);padding:.2rem .5rem}
+.module-arr{color:var(--white3);font-size:.8rem;transition:transform .2s,color .2s}
+.module-row:hover .module-arr{transform:translateX(4px);color:var(--orange)}
+
+/* RIALO */
+.rialo-section{background:var(--black2)}
+.rialo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border2);border:1px solid var(--border2);margin-top:4rem}
+.rialo-card{background:var(--black2);padding:2.5rem 2rem;transition:background .25s;position:relative;overflow:hidden}
+.rialo-card:hover{background:var(--black3)}
+.rialo-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--orange);transform:scaleY(0);transform-origin:bottom;transition:transform .3s ease}
+.rialo-card:hover::before{transform:scaleY(1)}
+.rialo-icon{font-family:var(--mono);font-size:.62rem;color:var(--orange);letter-spacing:2px;margin-bottom:1.2rem;display:block}
+.rialo-card h4{font-size:.95rem;font-weight:600;margin-bottom:.5rem}
+.rialo-card p{font-size:.8rem;color:var(--white3);line-height:1.65;font-weight:300}
+
+/* AUTOMATION */
+.auto-layout{display:grid;grid-template-columns:1fr 1.2fr;gap:6rem;align-items:center}
+.auto-list{margin-top:2rem;display:flex;flex-direction:column;gap:.6rem}
+.auto-item{display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.5rem;border:1px solid var(--border2);background:var(--black2);transition:border-color .2s,transform .2s;cursor:default}
+.auto-item:hover{border-color:var(--border);transform:translateX(4px)}
+.auto-item-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);margin-top:5px;flex-shrink:0}
+.auto-item-body h5{font-size:.84rem;font-weight:600;margin-bottom:.2rem}
+.auto-item-body p{font-size:.76rem;color:var(--white3);line-height:1.5}
+.code-block{background:var(--black3);border:1px solid var(--border2);padding:2rem;font-family:var(--mono);font-size:.76rem;line-height:2;position:relative;overflow:hidden}
+.code-block::before{content:'LIVE RULE';position:absolute;top:.8rem;right:1rem;font-size:.55rem;letter-spacing:2px;color:var(--orange)}
+.code-top{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.cd{width:10px;height:10px;border-radius:50%}
+.cd.r{background:#ff5f57}.cd.y{background:#febc2e}.cd.g{background:#28c840}
+.c-comment{color:var(--white3)}.c-key{color:var(--orange)}.c-val{color:var(--orange3)}.c-str{color:var(--white2)}.c-fn{color:#f5c518}
+.cursor-blink{display:inline-block;width:8px;height:1em;background:var(--orange);animation:blink 1s infinite;vertical-align:text-bottom}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* ROADMAP */
+.roadmap-section{background:var(--black2)}
+.roadmap-timeline{margin-top:4rem;position:relative}
+.roadmap-timeline::before{content:'';position:absolute;left:120px;top:0;bottom:0;width:1px;background:var(--border2)}
+.rm-phase{display:grid;grid-template-columns:120px 1fr;gap:3rem;margin-bottom:3.5rem;position:relative}
+.rm-phase::before{content:'';position:absolute;left:119px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--black);border:2px solid var(--border2);z-index:1;transition:border-color .3s,background .3s}
+.rm-phase:hover::before,.rm-phase.active::before{border-color:var(--orange);background:var(--orange);box-shadow:0 0 12px rgba(242,92,5,0.5)}
+.rm-date{font-family:var(--mono);font-size:.65rem;letter-spacing:2px;color:var(--white3);text-align:right;padding-top:4px;line-height:1.4}
+.rm-content{padding-left:2rem}
+.rm-phase-label{font-family:var(--mono);font-size:.6rem;letter-spacing:2px;color:var(--orange);margin-bottom:.6rem}
+.rm-content h4{font-family:var(--head);font-size:clamp(1.3rem,2.5vw,2rem);font-weight:700;font-style:normal;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:.7rem;line-height:1}
+.rm-content p{font-size:.82rem;color:var(--white2);line-height:1.7;margin-bottom:1rem}
+.rm-tags{display:flex;flex-wrap:wrap;gap:.5rem}
+.rm-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.5px;padding:.25rem .6rem;border:1px solid var(--border2);color:var(--white3)}
+.rm-phase.active .rm-tag{border-color:var(--border);color:var(--orange)}
+.rm-status{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.58rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1rem}
+.rm-status.live{color:var(--orange3)}
+.rm-status.live::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--orange3);animation:pulse2 1.5s infinite}
+.rm-status.upcoming{color:var(--white3)}
+.rm-status.upcoming::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--white3)}
+@keyframes pulse2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+
+/* DOCS CTA (replaces inline docs) */
+.docs-cta-section{background:var(--black3)}
+.docs-cta-inner{display:flex;align-items:center;justify-content:space-between;padding:4rem;border:1px solid var(--border2)}
+.docs-cta-inner h3{font-family:var(--head);font-size:clamp(2rem,4vw,3.5rem);line-height:0.95;word-break:keep-all;overflow:visible;font-weight:800;text-transform:uppercase;letter-spacing:-1px}
+.docs-cta-inner p{font-size:.85rem;color:var(--white3);margin-top:.6rem;max-width:380px}
+.docs-cta-right{display:flex;flex-direction:column;align-items:flex-end;gap:1rem;flex-shrink:0}
+.btn-docs{background:transparent;border:1px solid var(--border);color:var(--white);font-family:var(--mono);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;padding:.85rem 2rem;text-decoration:none;transition:border-color .2s,background .2s,color .2s}
+.btn-docs:hover{border-color:var(--orange);background:rgba(242,92,5,0.06);color:var(--orange)}
+.btn-docs-primary{background:var(--orange);color:#000;font-family:var(--mono);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;padding:.85rem 2rem;text-decoration:none;border:1px solid var(--orange);transition:background .2s}
+.btn-docs-primary:hover{background:var(--orange3)}
+.docs-meta{font-family:var(--mono);font-size:.6rem;color:var(--white3);letter-spacing:1px;text-align:right}
+
+/* LAUNCH */
+.launch-section{background:var(--black);position:relative;overflow:hidden;padding:8rem 3rem}
+.launch-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(242,92,5,0.1),transparent);pointer-events:none}
+.launch-inner{text-align:center;position:relative;z-index:1}
+.launch-inner h2{font-family:var(--head);font-size:clamp(3rem,9vw,9.5rem);line-height:0.92;margin-bottom:2.5rem;word-break:keep-all;overflow:visible;font-weight:800;text-transform:uppercase;letter-spacing:-2px}
+.launch-inner h2 em{font-style:normal;font-weight:800;-webkit-text-stroke:1.5px rgba(242,92,5,.4);color:transparent;letter-spacing:-2px}
+.launch-inner p{max-width:480px;margin:0 auto 2.5rem;font-size:.88rem;color:var(--white2);line-height:1.75;font-weight:300}
+.launch-form{display:flex;gap:0;max-width:460px;margin:0 auto 1rem;border:1px solid var(--border2)}
+.launch-input{flex:1;background:transparent;border:none;outline:none;padding:.9rem 1.3rem;color:var(--white);font-family:var(--body);font-size:.88rem}
+.launch-input::placeholder{color:var(--white3)}
+.launch-submit{background:var(--orange);color:#000;border:none;cursor:crosshair;padding:.9rem 1.8rem;font-family:var(--body);font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:background .2s;white-space:nowrap}
+.launch-submit:hover{background:var(--orange3)}
+.launch-note{font-family:var(--mono);font-size:.62rem;color:var(--white3);letter-spacing:1px}
+
+/* Confirmation toast */
+.confirm-toast{display:none;flex-direction:column;align-items:center;gap:.5rem;max-width:460px;margin:0 auto;padding:1.5rem 2rem;border:1px solid var(--orange);background:rgba(242,92,5,0.06);box-shadow:0 0 40px rgba(242,92,5,0.15),inset 0 0 40px rgba(242,92,5,0.03)}
+.confirm-toast.show{display:flex}
+.confirm-icon{font-family:var(--head);font-size:2rem;color:var(--orange);line-height:1}
+.confirm-title{font-family:var(--head);font-size:1.4rem;color:var(--white);letter-spacing:1px}
+.confirm-msg{font-family:var(--mono);font-size:.68rem;color:var(--white2);letter-spacing:.5px;text-align:center;line-height:1.7}
+.confirm-sub{font-family:var(--mono);font-size:.6rem;color:var(--white3);letter-spacing:.5px;margin-top:.25rem}
+
+.launch-count{display:flex;justify-content:center;gap:3rem;margin-top:4rem}
+.lc-item{text-align:center}
+.lc-num{font-family:var(--head);font-size:3rem;color:var(--orange);line-height:1}
+.lc-label{font-family:var(--mono);font-size:.6rem;color:var(--white3);letter-spacing:1.5px;text-transform:uppercase;margin-top:.3rem}
+
+/* CONTACT */
+.contact-section{background:var(--black2);padding:7rem 3rem}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;margin-top:4rem}
+.contact-left p{font-size:.88rem;color:var(--white3);line-height:1.75;margin-bottom:2rem;max-width:360px}
+.contact-email{font-family:var(--mono);font-size:.82rem;color:var(--orange);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:3px;transition:border-color .2s}
+.contact-email:hover{border-color:var(--orange)}
+.contact-right{}
+.social-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border2);border:1px solid var(--border2)}
+.social-card{background:var(--black2);padding:1.8rem 1.5rem;display:flex;flex-direction:column;gap:.8rem;text-decoration:none;transition:background .2s;position:relative;overflow:hidden}
+.social-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--orange);transform:scaleY(0);transform-origin:bottom;transition:transform .3s}
+.social-card:hover{background:var(--black3)}
+.social-card:hover::before{transform:scaleY(1)}
+.social-platform{font-family:var(--mono);font-size:.6rem;letter-spacing:2px;color:var(--orange);text-transform:uppercase}
+.social-handle{font-size:.9rem;font-weight:500;color:var(--white)}
+.social-desc{font-size:.75rem;color:var(--white3)}
+.social-arr{color:var(--white3);font-size:.8rem;margin-top:auto;transition:transform .2s,color .2s}
+.social-card:hover .social-arr{transform:translateX(4px);color:var(--orange)}
+
+/* FOOTER */
+footer{background:var(--black);border-top:1px solid var(--border2);padding:4rem 3rem 2rem}
+.footer-top{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-brand .logo-f{font-family:var(--head);font-size:1.6rem;letter-spacing:2px;font-weight:800;text-transform:uppercase;color:var(--white);display:block;margin-bottom:.8rem}
+.footer-brand .logo-f span{color:var(--orange)}
+.footer-brand p{font-size:.8rem;color:var(--white3);line-height:1.7;max-width:260px}
+.powered{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.62rem;color:var(--orange);border:1px solid var(--border);padding:.3rem .8rem;margin-top:1rem;letter-spacing:1px}
+.footer-col h5{font-family:var(--mono);font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--white3);margin-bottom:1.2rem}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+.footer-col ul li a{font-size:.82rem;color:var(--white3);text-decoration:none;transition:color .2s}
+.footer-col ul li a:hover{color:var(--orange)}
+.footer-bottom{border-top:1px solid var(--border2);padding-top:1.8rem;display:flex;justify-content:space-between;align-items:center}
+.footer-bottom p{font-size:.72rem;color:var(--white3);font-family:var(--mono);letter-spacing:.5px}
+.footer-bottom-links{display:flex;gap:2rem}
+.footer-bottom-links a{font-size:.72rem;color:var(--white3);text-decoration:none;font-family:var(--mono);transition:color .2s;letter-spacing:.5px}
+.footer-bottom-links a:hover{color:var(--orange)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 rgba(242,92,5,0);border-color:var(--border2)}50%{box-shadow:0 0 18px 2px rgba(242,92,5,0.1);border-color:var(--border)}}
+@keyframes borderTrace{0%{background-position:0% 0%}100%{background-position:200% 0%}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes orangeFlash{0%{color:var(--white)}50%{color:var(--orange)}100%{color:var(--white)}}
+@keyframes navGlow{0%,100%{text-shadow:none}50%{text-shadow:0 0 10px rgba(242,92,5,0.5)}}
+@keyframes typewriter{from{width:0}to{width:100%}}
+@keyframes cardFloat{0%,100%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-3px) rotate(.3deg)}66%{transform:translateY(2px) rotate(-.2deg)}}
+@keyframes lineExpand{from{width:0}to{width:20px}}
+@keyframes ringPulse{0%{opacity:0.08;transform:scale(1)}100%{opacity:0;transform:scale(1.4)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(0.22,1,0.36,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.15s}.reveal-delay-2{transition-delay:.3s}.reveal-delay-3{transition-delay:.45s}
+.reveal-left{opacity:0;transform:translateX(-32px);transition:opacity .75s ease,transform .75s cubic-bezier(0.22,1,0.36,1)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(0.94);transition:opacity .65s ease,transform .65s cubic-bezier(0.22,1,0.36,1)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+
+/* Stat counter animation */
+.stat-box{transition:transform .3s ease,background .25s}
+.stat-box:hover{transform:translateY(-3px);background:var(--black3)}
+.stat-box .num{background:linear-gradient(90deg,var(--white) 0%,var(--orange3) 50%,var(--white) 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4s linear infinite}
+
+/* Nav link hover underline slide */
+.nav-center a{position:relative;overflow:hidden}
+.nav-center a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--orange);transition:width .25s ease}
+.nav-center a:hover::after{width:100%}
+.nav-center a:hover{color:var(--white3)}
+
+/* Orange ring pulse on logo */
+.logo{position:relative}
+.logo::after{content:'';position:absolute;inset:-4px -8px;border:1px solid var(--orange);opacity:0;border-radius:1px;transition:opacity .3s}
+.logo:hover::after{animation:ringPulse .6s ease forwards}
+
+/* Module row enhanced hover */
+.module-row{transition:padding .2s ease,background .2s}
+.module-row:hover{padding-left:1.2rem;background:rgba(242,92,5,0.03)}
+.module-row:hover .module-name{color:var(--orange);transition:color .2s}
+
+/* Rialo card shimmer on hover */
+.rialo-card{transition:background .25s,transform .3s cubic-bezier(0.22,1,0.36,1)}
+.rialo-card:hover{transform:translateY(-4px)}
+.rialo-card .rialo-icon{transition:letter-spacing .3s}
+.rialo-card:hover .rialo-icon{letter-spacing:3px;color:var(--orange3)}
+
+/* Auto item enhanced */
+.auto-item{transition:border-color .2s,transform .25s cubic-bezier(0.22,1,0.36,1),background .2s}
+.auto-item:hover{border-color:var(--border);transform:translateX(8px);background:rgba(242,92,5,0.03)}
+.auto-item-dot{transition:transform .3s,box-shadow .3s}
+.auto-item:hover .auto-item-dot{transform:scale(1.5);box-shadow:0 0 8px rgba(242,92,5,0.5)}
+
+/* Roadmap phase dot pulse */
+.rm-phase.active::before{animation:pulse2 2s infinite}
+
+/* Social card hover lift */
+.social-card{transition:background .2s,transform .3s cubic-bezier(0.22,1,0.36,1)}
+.social-card:hover{transform:translateY(-4px)}
+
+/* Launch section glow pulse */
+.launch-section::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:300px;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);animation:glowPulse 3s ease infinite}
+
+/* Ticker item hover */
+.ticker-item{transition:color .2s}
+.ticker-item:hover{color:var(--white)}
+
+/* Button glow effects */
+.btn-primary,.btn-nav{position:relative;overflow:hidden}
+.btn-primary::after,.btn-nav::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);transform:translateX(-100%);transition:transform .4s}
+.btn-primary:hover::after,.btn-nav:hover::after{transform:translateX(100%)}
+
+/* Code block typing cursor enhanced */
+.cursor-blink{width:9px;height:1.1em;background:var(--orange);animation:blink .9s infinite;box-shadow:0 0 8px rgba(242,92,5,0.6)}
+
+/* Section label line animation */
+.section-label::before{animation:lineExpand .6s ease forwards}
+
+/* Footer link hover */
+.footer-col ul li a{position:relative;padding-left:0;transition:color .2s,padding-left .2s}
+.footer-col ul li a:hover{padding-left:6px}
+
+/* Docs CTA hover */
+.docs-cta-inner{transition:border-color .3s}
+.docs-cta-inner:hover{border-color:var(--border)}
+
+/* Confirm toast animation */
+.confirm-toast.show{animation:scaleIn .5s cubic-bezier(0.22,1,0.36,1) forwards}
+
+/* rm-phase slide in */
+.rm-phase{transition:opacity .5s,transform .5s}
+
+/* Input focus glow */
+.launch-input:focus{outline:none;box-shadow:inset 0 0 0 1px var(--orange)}
+
+/* Powered badge float */
+.powered{animation:floatY 3s ease-in-out infinite}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .intro-grid,.auto-layout,.contact-grid{grid-template-columns:1fr;gap:3rem}
+  .rialo-grid{grid-template-columns:1fr 1fr}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .docs-cta-inner{flex-direction:column;gap:2rem}
+  .docs-cta-right{align-items:flex-start}
+}
+@media(max-width:768px){
+  nav{padding:0 1.5rem}
+  .nav-center{display:none}
+  section,.roadmap-section,.contact-section,.launch-section,.docs-cta-section{padding:5rem 1.5rem}
+  .hero{padding:0 1.5rem 4rem}
+  .hero-bottom{flex-direction:column;align-items:flex-start;gap:2rem}
+  .hero-actions{align-items:flex-start}
+  .rialo-grid{grid-template-columns:1fr}
+  .launch-count{gap:1.5rem}
+  .social-grid{grid-template-columns:1fr}
+  .roadmap-timeline::before{left:80px}
+  .rm-phase{grid-template-columns:80px 1fr;gap:1.5rem}
+  .rm-phase::before{left:79px}
+  .footer-top{grid-template-columns:1fr}
+  .rule{margin:0 1.5rem}
+  .intro-stats{grid-template-columns:1fr 1fr}
+  .launch-form{flex-direction:column}
+  .launch-submit{border-radius:0}
+}
+
+/* THEME TOGGLE */
+.theme-toggle{background:none;border:1px solid var(--border2);color:var(--white3);font-size:1rem;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s,color .2s,transform .2s;flex-shrink:0}
+.theme-toggle:hover{border-color:var(--border);color:var(--orange);transform:rotate(45deg)}
+.theme-icon{line-height:1;pointer-events:none}
+[data-theme="light"] body{background:var(--black);color:var(--white)}
+[data-theme="light"] nav{background:rgba(242,237,230,0.95)}
+[data-theme="light"] .hero{background:var(--black)}
+[data-theme="light"] .rialo-section,[data-theme="light"] .roadmap-section,[data-theme="light"] .contact-section{background:var(--black2)}
+[data-theme="light"] .ticker{background:var(--black3)}
+[data-theme="light"] .rialo-card,[data-theme="light"] .stat-box{background:var(--black2)}
+[data-theme="light"] .rialo-card:hover{background:var(--black3)}
+[data-theme="light"] .code-block{background:var(--black3)}
+[data-theme="light"] .docs-cta-section{background:var(--black3)}
+[data-theme="light"] .social-card{background:var(--black2)}
+[data-theme="light"] .social-card:hover{background:var(--black3)}
+[data-theme="light"] footer{background:var(--black)}
+[data-theme="light"] .module-row:hover{background:rgba(242,92,5,0.05)}
+[data-theme="light"] .auto-item{background:var(--black2)}
+
+/* VIDEO BACKGROUND */
+.hero-video-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  will-change: transform;
+}
+.hero-video-bg video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%) scale(1.08);
+  object-fit: cover;
+  opacity: 0.38;
+  filter: brightness(0.75) saturate(1.2) contrast(1.05);
+  will-change: transform;
+  transition: opacity 1.2s ease;
+}
+/* Shine sweep overlay */
+.hero-video-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(242,92,5,0.04) 48%,
+    rgba(255,255,255,0.04) 50%,
+    rgba(242,92,5,0.04) 52%,
+    transparent 65%,
+    transparent 100%
+  );
+  background-size: 300% 300%;
+  animation: shineSweep 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+@keyframes shineSweep {
+  0%   { background-position: 200% 0% }
+  50%  { background-position: -100% 0% }
+  100% { background-position: 200% 0% }
+}
+/* Dark gradient overlays so text stays readable */
+.hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(to top, rgba(6,6,6,0.92) 0%, rgba(6,6,6,0.55) 35%, rgba(6,6,6,0.22) 70%, rgba(6,6,6,0.15) 100%),
+    linear-gradient(to right, rgba(6,6,6,0.6) 0%, transparent 60%);
+  pointer-events: none;
+}
+/* Scanline effect for polish */
+.hero-video-scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.06) 2px,
+    rgba(0,0,0,0.06) 4px
+  );
+  pointer-events: none;
+}
+/* Vignette */
+.hero-video-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(6,6,6,0.65) 100%);
+  pointer-events: none;
+}
+/* Orange accent glow bottom */
+.hero-video-glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 180px;
+  z-index: 2;
+  background: linear-gradient(to top, rgba(242,92,5,0.07), transparent);
+  pointer-events: none;
+}
+/* Ensure hero content sits above video */
+.hero-eyebrow,
+.hero h1,
+.hero-bottom,
+.hero-lines,
+.hero-grid-lines {
+  position: relative;
+  z-index: 5;
+}
+
+</style>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Rial<span>OS</span></a>
+  <div class="nav-center">
+    <a href="#about">Protocol</a>
+    <a href="#automation">Automation</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#" onclick="openDocs();return false;">Docs</a>
+    <a href="#launch">Early Access</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-tag">⚡ Built on Rialo</div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode" title="Toggle theme">
+      <span class="theme-icon">◐</span>
+    </button>
+    <a href="#launch" class="btn-nav">Launch App →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-video-bg">
+    <video autoplay muted loop playsinline id="heroBgVideo">
+    </video>
+  </div>
+  <div class="hero-video-overlay"></div>
+  <div class="hero-video-scanlines"></div>
+  <div class="hero-video-vignette"></div>
+  <div class="hero-video-glow"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="hero-eyebrow">— The Autonomous Finance Operating System —</div>
+  <h1>MONEY<br>THAT<br><em>THINKS</em></h1>
+  <div class="hero-bottom">
+    <div>
+      <p class="hero-desc">
+        <strong>One programmable layer</strong> for payroll, credit, and investing — running automatically, on-chain, with no intermediaries.
+      </p>
+      <div class="hero-counter" style="margin-top:1.2rem;">[ Rialo · Zero SWIFT · Zero Delays ]</div>
+    </div>
+    <div class="hero-actions">
+      <a href="#launch" class="btn-primary">Get Early Access &nbsp;→</a>
+      <a href="#about" class="btn-ghost">Explore the Protocol</a>
+      <div class="hero-counter" style="margin-top:.5rem;text-align:right;">4,200+ on waitlist</div>
+    </div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="ticker">
+    <div class="ticker-item">Payroll Engine <span>LIVE</span></div>
+    <div class="ticker-item">Cross-Border · 180+ Countries <span>→</span></div>
+    <div class="ticker-item">SIP Auto-Invest <span>BTC · ETH · SOL</span></div>
+    <div class="ticker-item">0.4s Settlement <span>INSTANT</span></div>
+    <div class="ticker-item">Undercollateralized Credit <span>ON-CHAIN</span></div>
+    <div class="ticker-item">Smart Treasury Vaults <span>AUTO-YIELD</span></div>
+    <div class="ticker-item">EMI Auto-Deduct <span>ACTIVE</span></div>
+    <div class="ticker-item">Event-Driven Rules <span>NO BOTS</span></div>
+    <div class="ticker-item">Payroll Engine <span>LIVE</span></div>
+    <div class="ticker-item">Cross-Border · 180+ Countries <span>→</span></div>
+    <div class="ticker-item">SIP Auto-Invest <span>BTC · ETH · SOL</span></div>
+    <div class="ticker-item">0.4s Settlement <span>INSTANT</span></div>
+    <div class="ticker-item">Undercollateralized Credit <span>ON-CHAIN</span></div>
+    <div class="ticker-item">Smart Treasury Vaults <span>AUTO-YIELD</span></div>
+    <div class="ticker-item">EMI Auto-Deduct <span>ACTIVE</span></div>
+    <div class="ticker-item">Event-Driven Rules <span>NO BOTS</span></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label"><span class="section-num">01</span>What is RialOS</div>
+  <div class="intro-grid">
+    <div>
+      <h2 class="display reveal">The OS<br>for <em>Capital</em></h2>
+      <div class="intro-stats reveal reveal-delay-1">
+        <div class="stat-box"><span class="num">$2.4<span>B</span></span><div class="lbl">Assets Under Automation</div></div>
+        <div class="stat-box"><span class="num">180<span>+</span></span><div class="lbl">Countries Supported</div></div>
+        <div class="stat-box"><span class="num">0.4<span>s</span></span><div class="lbl">Settlement Latency</div></div>
+        <div class="stat-box"><span class="num">$0</span><div class="lbl">Transfer Fees</div></div>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="intro-modules">
+        <a href="rialos_app.html" class="module-row" style="text-decoration:none;color:inherit;cursor:pointer;">
+          <div class="module-left"><span class="module-num">01</span><span class="module-name">Payroll Engine</span></div>
+          <div style="display:flex;align-items:center;gap:1rem"><span class="module-tag">LIVE</span><span class="module-arr">→</span></div>
+        </a>
+        <div class="module-row">
+          <div class="module-left"><span class="module-num">02</span><span class="module-name">Lending + EMI Automation</span></div>
+          <div style="display:flex;align-items:center;gap:1rem"><span class="module-tag">BETA</span><span class="module-arr">→</span></div>
+        </div>
+        <a href="rialos_app.html#sip" class="module-row" style="text-decoration:none;color:inherit;cursor:pointer;">
+          <div class="module-left"><span class="module-num">03</span><span class="module-name">Auto-Invest / SIP Engine</span></div>
+          <div style="display:flex;align-items:center;gap:1rem"><span class="module-tag">LIVE</span><span class="module-arr">→</span></div>
+        </a>
+        <div class="module-row">
+          <div class="module-left"><span class="module-num">04</span><span class="module-name">Identity + Credit Layer</span></div>
+          <div style="display:flex;align-items:center;gap:1rem"><span class="module-tag">Q3 2026</span><span class="module-arr">→</span></div>
+        </div>
+        <div class="module-row">
+          <div class="module-left"><span class="module-num">05</span><span class="module-name">Corporate Treasury Suite</span></div>
+          <div style="display:flex;align-items:center;gap:1rem"><span class="module-tag">BETA</span><span class="module-arr">→</span></div>
+        </div>
+        <div class="module-row">
+          <div class="module-left"><span class="module-num">06</span><span class="module-name">Tax &amp; Compliance Layer</span></div>
+          <div style="display:flex;align-items:center;gap:1rem"><span class="module-tag">Q4 2026</span><span class="module-arr">→</span></div>
+        </div>
+        <div class="module-row">
+          <div class="module-left"><span class="module-num">07</span><span class="module-name">API &amp; Ecosystem Platform</span></div>
+          <div style="display:flex;align-items:center;gap:1rem"><span class="module-tag">2027</span><span class="module-arr">→</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- RIALO -->
+<section class="rialo-section reveal">
+  <div class="section-label"><span class="section-num">02</span>Powered by Rialo</div>
+  <h2 class="display">Why only<br><em>Rialo</em><br>works</h2>
+  <div class="rialo-grid">
+    <div class="rialo-card reveal">
+      <span class="rialo-icon">[ 01 / CONNECTIVITY ]</span>
+      <h4>Native Web Connectivity</h4>
+      <p>Smart contracts call live HTTPS endpoints directly — no oracles. Real credit data, inside the contract.</p>
+    </div>
+    <div class="rialo-card reveal reveal-delay-1">
+      <span class="rialo-icon">[ 02 / EXECUTION ]</span>
+      <h4>Event-Driven Transactions</h4>
+      <p>One transaction triggers another natively — no keeper networks, no cron jobs, no middleware.</p>
+    </div>
+    <div class="rialo-card reveal reveal-delay-2">
+      <span class="rialo-icon">[ 03 / SCHEDULING ]</span>
+      <h4>Native Scheduling</h4>
+      <p>Recurring execution built into the protocol. Payroll, SIPs, EMIs — set once, run forever.</p>
+    </div>
+    <div class="rialo-card reveal">
+      <span class="rialo-icon">[ 04 / IDENTITY ]</span>
+      <h4>Email / Phone Onboarding</h4>
+      <p>Rialo abstracts wallets completely. No seed phrase. No MetaMask. Works for everyone.</p>
+    </div>
+    <div class="rialo-card reveal reveal-delay-1">
+      <span class="rialo-icon">[ 05 / ECONOMICS ]</span>
+      <h4>Stake-for-Service</h4>
+      <p>Staking yield covers all gas automatically. Thousands of daily automations — zero cost to users.</p>
+    </div>
+    <div class="rialo-card reveal reveal-delay-2">
+      <span class="rialo-icon">[ 06 / PRIVACY ]</span>
+      <h4>Protocol-Level Confidentiality</h4>
+      <p>Salary, loans, and positions stay private — yet fully auditable by authorized parties.</p>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- AUTOMATION -->
+<section id="automation">
+  <div class="section-label"><span class="section-num">03</span>Automation Layer</div>
+  <div class="auto-layout">
+    <div class="auto-text reveal">
+      <h2 class="display">Rules that<br><em>never</em><br>sleep</h2>
+      <div class="auto-list">
+        <div class="auto-item">
+          <div class="auto-item-dot"></div>
+          <div class="auto-item-body">
+            <h5>No External Schedulers</h5>
+            <p>Rules live entirely on-chain via Rialo's async execution.</p>
+          </div>
+        </div>
+        <div class="auto-item">
+          <div class="auto-item-dot"></div>
+          <div class="auto-item-body">
+            <h5>Composable Strategy Library</h5>
+            <p>Build, stack, and share rules on the community marketplace.</p>
+          </div>
+        </div>
+        <div class="auto-item">
+          <div class="auto-item-dot"></div>
+          <div class="auto-item-body">
+            <h5>Zero Gas Cost Operations</h5>
+            <p>Staking yield pays all fees. No top-ups. Ever.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-1">
+      <div class="code-block">
+        <div class="code-top"><div class="cd r"></div><div class="cd y"></div><div class="cd g"></div></div>
+<span class="c-comment">// RialOS Automation Rules — On-chain</span>
+
+<span class="c-key">rule</span> <span class="c-fn">onSalaryArrival</span>() {
+  <span class="c-key">when</span> salary.received == <span class="c-val">true</span>
+
+  <span class="c-key">→ invest</span>(<span class="c-str">"BTC"</span>, amount * <span class="c-val">0.20</span>)
+  <span class="c-key">→ repay</span>(<span class="c-str">loanContract</span>, amount * <span class="c-val">0.10</span>)
+  <span class="c-key">→ notify</span>(<span class="c-str">"WhatsApp"</span>, summary)
+}
+
+<span class="c-key">rule</span> <span class="c-fn">dipBuyer</span>() {
+  <span class="c-key">when</span> BTC.drop24h &gt;= <span class="c-val">10%</span>
+  <span class="c-key">→ dca</span>(<span class="c-str">"BTC"</span>, <span class="c-val">$200</span>)
+}
+
+<span class="c-key">rule</span> <span class="c-fn">liquidityGuard</span>() {
+  <span class="c-key">when</span> treasury &lt; payroll * <span class="c-val">30</span>
+  <span class="c-key">→ pause</span>(vendorPayments)
+  <span class="c-key">→ alert</span>(CFO, <span class="c-str">"URGENT"</span>)
+}<span class="cursor-blink"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ROADMAP -->
+<section class="roadmap-section" id="roadmap">
+  <div class="section-label"><span class="section-num">04</span>Roadmap</div>
+  <h2 class="display reveal">Building<br>the <em>future</em><br>of finance</h2>
+  <div class="roadmap-timeline">
+    <div class="rm-phase active reveal">
+      <div class="rm-date">Q1–Q2<br>2026</div>
+      <div class="rm-content">
+        <div class="rm-status live">● Live Now</div>
+        <div class="rm-phase-label">PHASE 01 — FOUNDATION</div>
+        <h4>Core Protocol Launch</h4>
+        <p>Send money instantly — to anyone, anywhere, right now. Companies pay employees in real time: salaries stream into wallets the moment they're due, with no monthly batch cycles, no bank delays, no SWIFT. Individuals send funds peer-to-peer in seconds via their Rialo account — split a bill, pay a contractor, transfer to family abroad. SIP / Auto-Invest live via DEX aggregators. Corporate Treasury beta. Automation rules engine v1.</p>
+        <div class="rm-tags">
+          <span class="rm-tag">Real-Time Payroll</span>
+          <span class="rm-tag">P2P Instant Transfers</span>
+          <span class="rm-tag">SIP Engine</span>
+          <span class="rm-tag">Treasury Beta</span>
+          <span class="rm-tag">Rules Engine v1</span>
+          <span class="rm-tag">180+ Countries</span>
+        </div>
+      </div>
+    </div>
+    <div class="rm-phase reveal">
+      <div class="rm-date">Q3<br>2026</div>
+      <div class="rm-content">
+        <div class="rm-status upcoming">○ Upcoming</div>
+        <div class="rm-phase-label">PHASE 02 — CREDIT</div>
+        <h4>Identity &amp; Credit Layer</h4>
+        <p>Wallet-based credit scoring from on-chain payroll history and web-fetched bureau data. Undercollateralized loans and salary-backed credit lines. Earned Wage Access.</p>
+        <div class="rm-tags">
+          <span class="rm-tag">Credit Scoring</span>
+          <span class="rm-tag">Undercollateralized Loans</span>
+          <span class="rm-tag">Earned Wage Access</span>
+          <span class="rm-tag">EMI Automation</span>
+          <span class="rm-tag">On-chain KYC</span>
+        </div>
+      </div>
+    </div>
+    <div class="rm-phase reveal">
+      <div class="rm-date">Q4<br>2026</div>
+      <div class="rm-content">
+        <div class="rm-status upcoming">○ Upcoming</div>
+        <div class="rm-phase-label">PHASE 03 — COMPLIANCE</div>
+        <h4>Tax, Insurance &amp; Protection</h4>
+        <p>Auto-generated tax reports. On-chain mutual protection pools. Loan default coverage. Salary protection buffers and smart contract insurance.</p>
+        <div class="rm-tags">
+          <span class="rm-tag">Tax Reports</span>
+          <span class="rm-tag">Audit Logs</span>
+          <span class="rm-tag">Protection Pools</span>
+          <span class="rm-tag">Default Insurance</span>
+          <span class="rm-tag">Compliance Export</span>
+        </div>
+      </div>
+    </div>
+    <div class="rm-phase reveal">
+      <div class="rm-date">Q1–Q2<br>2027</div>
+      <div class="rm-content">
+        <div class="rm-status upcoming">○ Upcoming</div>
+        <div class="rm-phase-label">PHASE 04 — ECOSYSTEM</div>
+        <h4>Open Platform &amp; API Layer</h4>
+        <p>Full developer API suite. SDK for mini-apps. Community strategy marketplace. RialOS becomes the platform, not just the product.</p>
+        <div class="rm-tags">
+          <span class="rm-tag">REST API</span>
+          <span class="rm-tag">SDK</span>
+          <span class="rm-tag">Strategy Marketplace</span>
+          <span class="rm-tag">Webhooks</span>
+          <span class="rm-tag">Partner Integrations</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- DOCS CTA -->
+<section class="docs-cta-section" id="docs">
+  <div class="section-label"><span class="section-num">05</span>Documentation</div>
+  <div class="docs-cta-inner reveal">
+    <div>
+      <h3>Read the<br>Full Docs</h3>
+      <p>Everything you need — API reference, SDK guides, module specs, and automation rule syntax.</p>
+    </div>
+    <div class="docs-cta-right">
+      <a href="#" onclick="openDocs();return false;" class="btn-docs-primary">Open Documentation →</a>
+      <a href="#" onclick="openDocs();return false;" class="btn-docs">API Reference</a>
+      <div class="docs-meta">Opens in a new tab · Always up to date</div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- LAUNCH / WAITLIST -->
+<section class="launch-section" id="launch">
+  <div class="launch-inner">
+    <div class="section-label" style="justify-content:center;margin-bottom:1.5rem"><span class="section-num">06</span>Early Access</div>
+    <h2 class="reveal">LAUNCH<br><em>YOUR</em><br>MONEY OS</h2>
+    <p class="reveal reveal-delay-1">First 500 companies get free onboarding, priority support, and founding-tier pricing — forever.</p>
+
+    <div id="launch-form-wrap" class="reveal reveal-delay-2">
+      <div class="launch-form">
+        <input class="launch-input" id="emailInput" type="email" placeholder="your@company.com">
+        <button class="launch-submit" id="submitBtn" onclick="handleWaitlist()">Join Waitlist →</button>
+      </div>
+      <p class="launch-note" style="margin-top:.8rem">No credit card · Free tier available · Cancel anytime</p>
+    </div>
+
+    <div class="confirm-toast" id="confirmToast">
+      <div class="confirm-icon">✓</div>
+      <div class="confirm-title">You're on the list.</div>
+      <div class="confirm-msg">Your email has been submitted successfully.<br>The RialOS team will reach out to you shortly for early access onboarding.</div>
+      <div class="confirm-sub">[ Keep an eye on your inbox — response within 48 hours ]</div>
+    </div>
+
+    <div class="launch-count reveal">
+      <div class="lc-item"><div class="lc-num">4,200+</div><div class="lc-label">On Waitlist</div></div>
+      <div class="lc-item"><div class="lc-num">240+</div><div class="lc-label">Companies</div></div>
+      <div class="lc-item"><div class="lc-num">38</div><div class="lc-label">Countries</div></div>
+      <div class="lc-item"><div class="lc-num">$0</div><div class="lc-label">Setup Cost</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="section-label"><span class="section-num">07</span>Get in Touch</div>
+  <div class="contact-grid">
+    <div class="contact-left reveal">
+      <h2 class="display" style="margin-bottom:1.5rem">Say<br><em>Hello</em></h2>
+      <p>Have questions, partnership ideas, or integration requests? Reach us directly or join the community.</p>
+      <a href="mailto:hello@rialos.xyz" class="contact-email">hello@rialos.xyz</a>
+    </div>
+    <div class="contact-right reveal reveal-delay-1">
+      <div class="social-grid">
+        <a href="https://discord.gg/rialos" target="_blank" class="social-card">
+          <span class="social-platform">[ Discord ]</span>
+          <span class="social-handle">RialOS Community</span>
+          <span class="social-desc">Join builders, ask questions, get support</span>
+          <span class="social-arr">→</span>
+        </a>
+        <a href="https://x.com/rialos_xyz" target="_blank" class="social-card">
+          <span class="social-platform">[ X / Twitter ]</span>
+          <span class="social-handle">@rialos_xyz</span>
+          <span class="social-desc">Updates, announcements, and threads</span>
+          <span class="social-arr">→</span>
+        </a>
+        <a href="https://linkedin.com/company/rialos" target="_blank" class="social-card">
+          <span class="social-platform">[ LinkedIn ]</span>
+          <span class="social-handle">RialOS Protocol</span>
+          <span class="social-desc">Corporate updates and partnerships</span>
+          <span class="social-arr">→</span>
+        </a>
+        <a href="https://github.com/rialos-xyz" target="_blank" class="social-card">
+          <span class="social-platform">[ GitHub ]</span>
+          <span class="social-handle">rialos-xyz</span>
+          <span class="social-desc">SDK, smart contracts, open source</span>
+          <span class="social-arr">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="logo-f">Rial<span>OS</span></span>
+      <p>The Autonomous Finance OS. Built on Rialo. One programmable layer for payroll, lending, and investing.</p>
+      <div class="powered">⚡ Powered by Rialo</div>
+    </div>
+    <div class="footer-col">
+      <h5>Product</h5>
+      <ul>
+        <li><a href="rialos_app.html">Payroll Engine</a></li>
+        <li><a href="#">Lending &amp; Credit</a></li>
+        <li><a href="rialos_app.html#sip">Auto-Invest</a></li>
+        <li><a href="#">Treasury Suite</a></li>
+        <li><a href="#">Automation Rules</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Developers</h5>
+      <ul>
+        <li><a href="#" onclick="openDocs();return false;">Documentation</a></li>
+        <li><a href="#" onclick="openDocs();return false;">SDK Reference</a></li>
+        <li><a href="https://github.com/rialos-xyz" target="_blank">GitHub</a></li>
+        <li><a href="#">Changelog</a></li>
+        <li><a href="#">Status</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 RialOS Protocol · Built on Rialo</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Security</a>
+      <a href="#">Audit Reports</a>
+    </div>
+  </div>
+</footer>
+
+<!-- DOCS OVERLAY -->
+<div id="docsOverlay" style="display:none;position:fixed;inset:0;z-index:9999;overflow-y:auto;background:var(--black);">
+<style>
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#060606;--black2:#0c0c0c;--black3:#111111;--black4:#1a1a1a;
+  --orange:#f25c05;--orange2:#e04800;--orange3:#ff7a2e;
+  --white:#f5f0ea;--white2:#b8b0a6;--white3:#7a736b;
+  --border:rgba(242,92,5,0.15);--border2:rgba(245,240,234,0.08);
+  --sidebar-w:268px;--topbar-h:60px;
+  --mono:'JetBrains Mono',monospace;--head:'Bebas Neue',sans-serif;--body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--body);overflow-x:hidden;cursor:crosshair;font-feature-settings:"kern" 1,"liga" 1,"calt" 1;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--orange2);border-radius:2px}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.35}
+
+/* TOPBAR */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;height:var(--topbar-h);
+  background:rgba(6,6,6,0.97);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border2);
+}
+.topbar-left{display:flex;align-items:center;gap:1.2rem}
+.logo{font-family:var(--head);font-size:1.5rem;letter-spacing:2px;color:var(--white);text-decoration:none}
+.logo span{color:var(--orange)}
+.topbar-divider{width:1px;height:18px;background:var(--border2)}
+.topbar-label{font-family:var(--mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--white3)}
+.topbar-right{display:flex;align-items:center;gap:1.5rem}
+.back-link{font-family:var(--mono);font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--white3);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:.4rem;border:1px solid var(--border2);padding:.3rem .8rem}
+.back-link:hover{color:var(--orange);border-color:var(--border)}
+.doc-version{font-family:var(--mono);font-size:.6rem;letter-spacing:1px;color:var(--orange);border:1px solid var(--border);padding:.25rem .7rem}
+
+/* LAYOUT */
+.docs-layout{display:flex;min-height:100vh;padding-top:var(--topbar-h)}
+
+/* SIDEBAR */
+.docs-sidebar{
+  position:fixed;top:var(--topbar-h);left:0;bottom:0;
+  width:var(--sidebar-w);
+  overflow-y:auto;
+  background:var(--black2);
+  border-right:1px solid var(--border2);
+  padding:2rem 0 4rem;
+  flex-shrink:0;
+}
+.docs-sidebar::-webkit-scrollbar{width:3px}
+.docs-sidebar::-webkit-scrollbar-thumb{background:var(--border2)}
+.sidebar-search{margin:0 1.2rem 1.5rem;display:flex;align-items:center;gap:.6rem;background:var(--black3);border:1px solid var(--border2);padding:.5rem .8rem;transition:border-color .2s}
+.sidebar-search:focus-within{border-color:var(--border)}
+.sidebar-search-icon{font-family:var(--mono);font-size:.65rem;color:var(--white3)}
+.sidebar-search input{background:none;border:none;outline:none;font-family:var(--mono);font-size:.7rem;color:var(--white);width:100%}
+.sidebar-search input::placeholder{color:var(--white3)}
+.sidebar-group{margin-bottom:1.8rem;padding:0 1.2rem}
+.sidebar-group-title{font-family:var(--mono);font-size:.57rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--white3);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--border2)}
+.sidebar-link{display:flex;align-items:center;gap:.6rem;padding:.48rem .8rem;font-size:.81rem;color:var(--white3);text-decoration:none;border-left:2px solid transparent;margin-left:-.8rem;border-radius:0 2px 2px 0;transition:color .15s,border-color .15s,background .15s}
+.sidebar-link:hover{color:var(--white);background:rgba(245,240,234,0.04)}
+.sidebar-link.active{color:var(--orange);border-left-color:var(--orange);background:rgba(242,92,5,0.06)}
+.sidebar-link .dot{width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:.45;transition:opacity .15s}
+.sidebar-link.active .dot,.sidebar-link:hover .dot{opacity:1}
+
+/* CONTENT */
+.docs-content{
+  margin-left:var(--sidebar-w);
+  flex:1;
+  padding:3.5rem 5rem 8rem;
+  max-width:calc(100% - var(--sidebar-w));
+  min-width:0;
+}
+.docs-hero{padding-bottom:3rem;margin-bottom:3rem;border-bottom:1px solid var(--border2)}
+.docs-hero-tag{font-family:var(--mono);font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:1rem;display:flex;align-items:center;gap:.7rem}
+.docs-hero-tag::before{content:'';width:16px;height:1px;background:var(--orange)}
+.docs-hero h1{font-family:var(--head);font-size:clamp(2.5rem,5vw,5rem);line-height:0.92;font-weight:800;font-style:normal;text-transform:uppercase;letter-spacing:-1.5px;margin-bottom:1rem;word-break:keep-all;overflow:visible}
+.docs-hero h1 em{font-style:normal;font-weight:800;-webkit-text-stroke:1.5px var(--white3);color:transparent;letter-spacing:-1.5px}
+.docs-hero p{font-size:.9rem;color:var(--white2);line-height:1.8;max-width:600px;font-weight:300}
+.docs-meta-row{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.8rem}
+.meta-item{font-family:var(--mono);font-size:.62rem;color:var(--white3);letter-spacing:.5px;display:flex;align-items:center;gap:.4rem;background:var(--black2);border:1px solid var(--border2);padding:.35rem .8rem}
+.meta-item span{color:var(--orange)}
+
+/* SECTION ANCHORS */
+.doc-section{margin-bottom:5rem;scroll-margin-top:80px}
+.doc-section-label{font-family:var(--mono);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:1.2rem;display:flex;align-items:center;gap:.6rem}
+.doc-section-label::before{content:'';width:14px;height:1px;background:var(--orange)}
+.doc-section h2{font-family:var(--head);font-size:clamp(1.7rem,3.5vw,2.8rem);line-height:0.95;font-weight:800;font-style:normal;text-transform:uppercase;letter-spacing:-1px;margin-bottom:1.5rem;word-break:keep-all;overflow:visible}
+.doc-section p{font-size:.87rem;color:var(--white2);line-height:1.88;margin-bottom:1.2rem;font-weight:300}
+.doc-section p strong{color:var(--white);font-weight:500}
+
+/* DIVIDERS */
+.doc-divider{height:1px;background:var(--border2);margin:4.5rem 0}
+
+/* FEATURE BLOCKS */
+.feature-block{border:1px solid var(--border2);background:var(--black2);margin-bottom:.8rem;overflow:hidden;transition:border-color .2s,background .2s;position:relative}
+.feature-block::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange);transform:scaleY(0);transform-origin:bottom;transition:transform .3s ease}
+.feature-block.open::before,.feature-block:hover::before{transform:scaleY(1)}
+.feature-block:hover{border-color:var(--border)}
+.feature-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem 1.25rem 1.8rem;cursor:pointer;user-select:none}
+.feature-header-left{display:flex;align-items:center;gap:1rem}
+.feature-num{font-family:var(--mono);font-size:.58rem;color:var(--white3);letter-spacing:1px}
+.feature-title{font-size:.9rem;font-weight:600;color:var(--white)}
+.feature-status{font-family:var(--mono);font-size:.58rem;letter-spacing:1px;padding:.2rem .6rem;border:1px solid var(--border2);color:var(--white3);text-transform:uppercase}
+.feature-status.live{border-color:rgba(242,92,5,0.3);color:var(--orange);background:rgba(242,92,5,0.06)}
+.feature-status.beta{border-color:rgba(245,164,0,0.25);color:#f5a400;background:rgba(245,164,0,0.05)}
+.feature-status.soon{color:var(--white3)}
+.feature-toggle{color:var(--white3);font-size:1rem;transition:transform .25s,color .2s;line-height:1;font-family:var(--mono);width:20px;text-align:center}
+.feature-block.open .feature-toggle{transform:rotate(45deg);color:var(--orange)}
+.feature-body{display:none;padding:1.5rem 1.8rem 1.8rem;border-top:1px solid var(--border2);background:var(--black3)}
+.feature-block.open .feature-body{display:block}
+.feature-body p{font-size:.84rem;color:var(--white2);line-height:1.85;margin-bottom:1rem;font-weight:300}
+.feature-body p strong{color:var(--white);font-weight:500}
+.feature-cols{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem}
+.feature-col{background:var(--black2);border:1px solid var(--border2);padding:1.2rem 1.3rem}
+.feature-col h5{font-family:var(--mono);font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--border2)}
+.feature-col ul{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.feature-col ul li{font-size:.79rem;color:var(--white2);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
+.feature-col ul li::before{content:'→';color:var(--orange);flex-shrink:0;font-family:var(--mono);font-size:.65rem;margin-top:2px}
+.coming-badge{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.58rem;letter-spacing:1.5px;text-transform:uppercase;padding:.3rem .8rem;background:rgba(242,92,5,0.07);border:1px solid var(--border);color:var(--orange);margin-top:1.2rem}
+.coming-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--orange);animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
+
+/* CODE BLOCKS */
+.code-block{background:var(--black);border:1px solid var(--border2);border-left:3px solid var(--orange);padding:1.6rem 1.6rem 1.6rem 1.8rem;font-family:var(--mono);font-size:.75rem;line-height:2;color:var(--white2);overflow-x:auto;margin:1.2rem 0;position:relative}
+.code-block .k{color:var(--orange)}.code-block .s{color:var(--orange3)}.code-block .c{color:var(--white3)}.code-block .fn{color:#f5c518}
+.code-label{font-family:var(--mono);font-size:.57rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--white3);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.code-label::before{content:'';width:10px;height:1px;background:var(--white3)}
+
+/* PARAM TABLE */
+.param-table{width:100%;border-collapse:collapse;font-size:.82rem;margin:1.2rem 0;border:1px solid var(--border2)}
+.param-table thead{background:var(--black2)}
+.param-table th{text-align:left;font-family:var(--mono);font-size:.58rem;letter-spacing:1.5px;color:var(--white3);border-bottom:1px solid var(--border2);padding:.8rem 1rem;text-transform:uppercase}
+.param-table td{padding:.75rem 1rem;color:var(--white2);border-bottom:1px solid rgba(245,240,234,0.04);vertical-align:top;line-height:1.55}
+.param-table tr:last-child td{border-bottom:none}
+.param-table td:first-child{font-family:var(--mono);color:var(--orange3);font-size:.74rem}
+.param-table td:nth-child(2){font-family:var(--mono);font-size:.68rem;color:var(--white3)}
+.param-table tbody tr:hover td{background:rgba(245,240,234,0.02)}
+
+/* INFO BOXES */
+.info-box{border:1px solid var(--border2);background:var(--black3);padding:1.2rem 1.5rem;margin:1.5rem 0;border-left:3px solid var(--white3);font-size:.83rem;color:var(--white2);line-height:1.75}
+.info-box.orange{border-left-color:var(--orange);background:rgba(242,92,5,0.04)}
+.info-box.orange .info-label{color:var(--orange)}
+.info-label{font-family:var(--mono);font-size:.58rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem;display:block}
+
+/* BREADCRUMB */
+.breadcrumb{font-family:var(--mono);font-size:.64rem;color:var(--white3);letter-spacing:1px;margin-bottom:2rem;display:flex;align-items:center;gap:.5rem}
+.breadcrumb a{color:var(--white3);text-decoration:none;transition:color .2s}
+.breadcrumb a:hover{color:var(--orange)}
+.breadcrumb .sep{opacity:.4}
+
+/* ON-PAGE TOC (right rail hidden by default, shown on wide screens) */
+.toc-rail{display:none}
+
+/* FOOTER NOTE */
+.docs-footer-note{background:var(--black2);border:1px solid var(--border2);padding:2.5rem;text-align:center;margin-top:4rem;position:relative;overflow:hidden}
+.docs-footer-note::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent)}
+.docs-footer-note h4{font-family:var(--head);font-size:1.6rem;margin-bottom:.6rem;word-break:keep-all;overflow:visible;font-weight:800;text-transform:uppercase;letter-spacing:-0.5px}
+.docs-footer-note p{font-size:.82rem;color:var(--white3);line-height:1.75;max-width:520px;margin:0 auto}
+.docs-footer-note p span{color:var(--orange)}
+.docs-footer-note .update-date{font-family:var(--mono);font-size:.6rem;color:var(--white3);letter-spacing:1px;margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border2);display:inline-block}
+
+/* ARCHITECTURE DIAGRAM */
+.arch-diagram{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border2);border:1px solid var(--border2);margin:2rem 0}
+.arch-layer{background:var(--black2);padding:1.5rem 1.2rem;text-align:center;transition:background .2s}
+.arch-layer:hover{background:var(--black3)}
+.arch-layer-label{font-family:var(--mono);font-size:.56rem;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.6rem}
+.arch-layer-name{font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:.3rem}
+.arch-layer-sub{font-size:.72rem;color:var(--white3);line-height:1.4}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .docs-content{padding:3rem 3rem 6rem}
+}
+@media(max-width:900px){
+  .docs-sidebar{display:none}
+  .docs-content{margin-left:0;padding:2rem 1.5rem 5rem;max-width:100%}
+  .feature-cols{grid-template-columns:1fr}
+  .arch-diagram{grid-template-columns:1fr 1fr}
+  .docs-meta-row{gap:.6rem}
+}
+@media(max-width:540px){
+  .topbar{padding:0 1.2rem}
+  .topbar-label,.topbar-divider{display:none}
+  .docs-hero h1{font-size:clamp(2.2rem,10vw,3.5rem)}
+  .arch-diagram{grid-template-columns:1fr}
+}
+
+/* Override topbar to be sticky inside overlay */
+#docsOverlay .topbar { position: sticky; top: 0; }
+#docsOverlay .docs-sidebar { position: fixed; top: var(--topbar-h); }
+#docsOverlay .docs-layout { min-height: 100vh; }
+</style>
+
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="#" onclick="closeDocs();return false;" class="logo">Rial<span>OS</span></a>
+    <div class="topbar-divider"></div>
+    <span class="topbar-label">Documentation</span>
+  </div>
+  <div class="topbar-right">
+    <a href="#" onclick="closeDocs();return false;" class="back-link">← Back to Homepage</a>
+    <div class="doc-version">v1.0 · April 2026</div>
+  </div>
+</div>
+
+<div class="docs-layout">
+
+<!-- SIDEBAR -->
+<div class="docs-sidebar">
+  <div class="sidebar-search">
+    <span class="sidebar-search-icon">⌕</span>
+    <input type="text" placeholder="Search docs..." id="sidebarSearch" oninput="filterSidebar(this.value)">
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Overview</div>
+    <a href="#intro" class="sidebar-link active"><span class="dot"></span>Introduction</a>
+    <a href="#how-it-works" class="sidebar-link"><span class="dot"></span>How It Works</a>
+    <a href="#architecture" class="sidebar-link"><span class="dot"></span>Architecture</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Core Modules</div>
+    <a href="rialos_app.html" class="sidebar-link"><span class="dot"></span>Payroll Engine</a>
+    <a href="#lending" class="sidebar-link"><span class="dot"></span>Lending + EMI</a>
+    <a href="rialos_app.html#sip" class="sidebar-link"><span class="dot"></span>Auto-Invest / SIP</a>
+    <a href="#identity" class="sidebar-link"><span class="dot"></span>Identity + Credit</a>
+    <a href="#treasury" class="sidebar-link"><span class="dot"></span>Corporate Treasury</a>
+    <a href="#recurring" class="sidebar-link"><span class="dot"></span>Recurring Payments</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Automation</div>
+    <a href="#rules" class="sidebar-link"><span class="dot"></span>Rules Engine</a>
+    <a href="#triggers" class="sidebar-link"><span class="dot"></span>Event Triggers</a>
+    <a href="#gas" class="sidebar-link"><span class="dot"></span>Gas &amp; Economics</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Additional</div>
+    <a href="#crossborder" class="sidebar-link"><span class="dot"></span>Cross-Border Payroll</a>
+    <a href="#tax" class="sidebar-link"><span class="dot"></span>Tax &amp; Compliance</a>
+    <a href="#insurance" class="sidebar-link"><span class="dot"></span>Insurance &amp; Protection</a>
+    <a href="#notifications" class="sidebar-link"><span class="dot"></span>Notification Layer</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Developers</div>
+    <a href="#sdk" class="sidebar-link"><span class="dot"></span>SDK Quickstart</a>
+    <a href="#api" class="sidebar-link"><span class="dot"></span>API Reference</a>
+    <a href="#webhooks" class="sidebar-link"><span class="dot"></span>Webhooks</a>
+    <a href="#faq" class="sidebar-link"><span class="dot"></span>FAQ</a>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="docs-content">
+
+  <div class="breadcrumb">
+    <a href="#" onclick="closeDocs();return false;">RialOS</a>
+    <span class="sep">/</span>
+    <span>Documentation</span>
+  </div>
+
+  <!-- HERO -->
+  <div class="docs-hero">
+    <div class="docs-hero-tag">Full Reference Documentation</div>
+    <h1>RialOS<br><em>DOCS</em></h1>
+    <p>Everything you need to understand, integrate, and build with RialOS — the autonomous finance operating system built on Rialo L1.</p>
+    <div class="docs-meta-row">
+      <div class="meta-item">Version <span>1.0</span></div>
+      <div class="meta-item">Updated <span>April 2026</span></div>
+      <div class="meta-item">Network <span>Rialo Mainnet</span></div>
+      <div class="meta-item">Status <span>Live + Beta</span></div>
+    </div>
+  </div>
+
+  <!-- ══ INTRODUCTION ══════════════════════════════════ -->
+  <div class="doc-section" id="intro">
+    <div class="doc-section-label">01 / Introduction</div>
+    <h2>What is RialOS?</h2>
+    <p>RialOS is the <strong>Autonomous Finance Operating System</strong> — a unified, programmable financial layer for both companies and individuals. It automates how money is earned, managed, spent, borrowed, and invested through smart contracts that react to real-world events in real time.</p>
+    <p>RialOS is not a payroll tool. Not a lending app. Not an investment platform. It is the layer that sits beneath all of those functions and makes them run automatically based on your behavior and your rules.</p>
+    <p>Built natively on <strong>Rialo L1</strong>, RialOS inherits the protocol's most powerful capabilities: native HTTPS calls inside smart contracts, event-driven execution, scheduled transactions, social login, and built-in privacy. Without Rialo, RialOS would require a complex stack of oracles, keeper networks, and off-chain bots. On Rialo, all of that is handled at the protocol level.</p>
+    <div class="info-box orange" style="margin-top:1.5rem">
+      <span class="info-label">Key Insight</span>
+      RialOS turns finance into programmable workflows. Instead of manually paying salaries, repaying loans, or making investments — everything runs automatically through smart contracts and event triggers, powered by Rialo.
+    </div>
+  </div>
+
+  <div class="doc-divider"></div>
+
+  <!-- ══ HOW IT WORKS ══════════════════════════════════ -->
+  <div class="doc-section" id="how-it-works">
+    <div class="doc-section-label">02 / How It Works</div>
+    <h2>Three Steps</h2>
+    <p>RialOS operates on a simple three-step model that hides enormous complexity behind a clean interface.</p>
+    <div class="feature-cols" style="margin-top:1.5rem">
+      <div class="feature-col">
+        <h5>Step 01 — Connect</h5>
+        <ul>
+          <li>Link your company wallet or onboard via email</li>
+          <li>Map employees by wallet, email, or phone</li>
+          <li>Configure treasury and vault access</li>
+          <li>RialOS builds your on-chain financial profile automatically</li>
+        </ul>
+      </div>
+      <div class="feature-col">
+        <h5>Step 02 — Configure Rules</h5>
+        <ul>
+          <li>Define automation rules in plain language</li>
+          <li>RialOS compiles them to Rialo smart contract listeners</li>
+          <li>Set salary routing, investment triggers, EMI deductions</li>
+          <li>Rules stack and chain — build complex workflows visually</li>
+        </ul>
+      </div>
+      <div class="feature-col">
+        <h5>Step 03 — Run Autonomously</h5>
+        <ul>
+          <li>Smart contracts execute 24/7 with no manual input</li>
+          <li>Events trigger across borders, assets, and systems</li>
+          <li>Gas costs covered by staking yield automatically</li>
+          <li>Receive alerts via WhatsApp, email, or webhook</li>
+        </ul>
+      </div>
+      <div class="feature-col">
+        <h5>Who is it for?</h5>
+        <ul>
+          <li>Crypto-native startups and Web3 DAOs</li>
+          <li>Remote global teams needing cross-border payroll</li>
+          <li>Salaried employees wanting financial automation</li>
+          <li>Freelancers and independent professionals</li>
+          <li>Fintechs building on top of RialOS APIs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-divider"></div>
+
+  <!-- ══ ARCHITECTURE ══════════════════════════════════ -->
+  <div class="doc-section" id="architecture">
+    <div class="doc-section-label">02b / Architecture</div>
+    <h2>Protocol Stack</h2>
+    <p>RialOS is a layered system built entirely on Rialo L1. Each layer is decoupled — the SDK and API expose clean interfaces to the layers below, while Rialo handles the lowest-level execution, scheduling, and settlement.</p>
+
+    <div class="arch-diagram">
+      <div class="arch-layer">
+        <div class="arch-layer-label">[ Layer 4 ]</div>
+        <div class="arch-layer-name">SDK / REST API</div>
+        <div class="arch-layer-sub">TypeScript SDK, REST endpoints, webhooks, dashboard</div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-layer-label">[ Layer 3 ]</div>
+        <div class="arch-layer-name">Rules Engine</div>
+        <div class="arch-layer-sub">On-chain automation DSL, event listeners, action chaining</div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-layer-label">[ Layer 2 ]</div>
+        <div class="arch-layer-name">RialOS Contracts</div>
+        <div class="arch-layer-sub">Payroll, lending, SIP, treasury, identity smart contracts</div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-layer-label">[ Layer 1 ]</div>
+        <div class="arch-layer-name">Rialo L1</div>
+        <div class="arch-layer-sub">Native HTTPS, event-driven exec, scheduling, 0.4s finality</div>
+      </div>
+    </div>
+
+    <div class="info-box orange">
+      <span class="info-label">Why Rialo?</span>
+      Traditional blockchains require external oracles, keeper networks, and off-chain bots to trigger smart contracts. Rialo has all of this built in at the protocol level — meaning RialOS rules execute natively on-chain with no middleware, no single points of failure, and no extra trust assumptions.
+    </div>
+  </div>
+
+  <div class="doc-divider"></div>
+
+  <!-- ══ CORE MODULES ══════════════════════════════════ -->
+  <div class="doc-section" id="payroll">
+    <div class="doc-section-label">03 / Core Modules</div>
+    <h2>Core Modules</h2>
+    <p>RialOS is composed of 12 integrated modules. Click any module to expand full details.</p>
+
+    <!-- PAYROLL ENGINE -->
+    <div class="feature-block open">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left">
+          <span class="feature-num">01</span>
+          <span class="feature-title">Payroll Engine</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <span class="feature-status live">LIVE</span>
+          <span class="feature-toggle">+</span>
+        </div>
+      </div>
+      <div class="feature-body">
+        <p>The Payroll Engine handles <strong>on-chain salary disbursement</strong> to any number of employees globally. Payments are made in stablecoins (USDC or USDT) and settle instantly on Rialo — no banks, no SWIFT delays, no correspondent fees.</p>
+        <p>Employees can be onboarded via wallet address, email, or phone number. Rialo's native social login abstracts the wallet entirely for non-crypto users — they simply receive funds to their account without ever touching a seed phrase or MetaMask.</p>
+        <div class="info-box orange">
+          <span class="info-label">Live Feature</span>
+          Real-time salary streaming is available now. Employees earn per second, not per month — funds flow continuously into their account as they work.
+        </div>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>What it does</h5>
+            <ul>
+              <li>Bulk salary disbursement to unlimited employees</li>
+              <li>Real-time per-second salary streaming</li>
+              <li>Supports USDC and USDT stablecoin payments</li>
+              <li>Instant on-chain settlement — no delays</li>
+              <li>Full audit trail stored immutably on Rialo</li>
+              <li>Multi-currency conversion at point of payment</li>
+              <li>Role-based access for HR and finance teams</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>How it works</h5>
+            <ul>
+              <li>Company funds a payroll vault with USDC/USDT</li>
+              <li>Employee wallet addresses mapped on-chain</li>
+              <li>Scheduled Rialo transaction executes disbursement</li>
+              <li>Each payment emits an on-chain event for audit logs</li>
+              <li>Gas costs covered via Stake-for-Service yield</li>
+              <li>Company CFO dashboard shows live disbursement status</li>
+            </ul>
+          </div>
+        </div>
+        <div class="code-label">SDK Example</div>
+        <div class="code-block">
+<span class="k">const</span> result = <span class="k">await</span> flow.payroll.disburse({
+  employees: [
+    { id: <span class="s">'emp_001'</span>, amount: 5000, currency: <span class="s">'USDC'</span> },
+    { id: <span class="s">'emp_002'</span>, amount: 7200, currency: <span class="s">'USDC'</span> },
+  ],
+  stream: <span class="k">true</span>,     <span class="c">// enable per-second streaming</span>
+  memo:   <span class="s">'April 2026 Payroll'</span>
+})
+console.log(result.txHash, result.settled) <span class="c">// instant: true</span>
+        </div>
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>employees</td><td>Array</td><td>List of employee objects with id, amount, and currency</td></tr>
+            <tr><td>stream</td><td>Boolean</td><td>Enable real-time per-second salary streaming via Rialo</td></tr>
+            <tr><td>memo</td><td>String</td><td>Payroll reference string stored immutably in the on-chain audit log</td></tr>
+            <tr><td>currency</td><td>String</td><td>USDC or USDT — both supported natively on Rialo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LENDING -->
+    <div class="feature-block" id="lending">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-num">02</span><span class="feature-title">Lending + EMI Automation</span></div>
+        <div style="display:flex;align-items:center;gap:1rem"><span class="feature-status beta">BETA</span><span class="feature-toggle">+</span></div>
+      </div>
+      <div class="feature-body">
+        <p>RialOS enables <strong>undercollateralized loans</strong> using on-chain credit profiles assembled from verifiable data — payroll history, repayment behavior, and real-world credit bureau data fetched natively by Rialo smart contracts (no oracles required).</p>
+        <p>EMI (Equated Monthly Installment) repayments are <strong>auto-deducted via recurring smart contracts</strong>. No missed payments. No manual transfers. No collection calls.</p>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>Loan Types</h5>
+            <ul>
+              <li>Undercollateralized loans based on credit score</li>
+              <li>Salary-backed credit lines (draw anytime)</li>
+              <li>Earned Wage Access — withdraw earned salary early</li>
+              <li>Corporate credit facilities for treasury</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>EMI Automation</h5>
+            <ul>
+              <li>Repayments auto-deducted on schedule</li>
+              <li>Live repayment tracker in dashboard</li>
+              <li>Grace period rules configurable on-chain</li>
+              <li>Default triggers protection pool automatically</li>
+            </ul>
+          </div>
+        </div>
+        <div class="coming-badge">Coming Q3 2026 — Full Launch</div>
+      </div>
+    </div>
+
+    <!-- AUTO-INVEST -->
+    <div class="feature-block" id="invest">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-num">03</span><span class="feature-title">Auto-Invest / SIP Engine</span></div>
+        <div style="display:flex;align-items:center;gap:1rem"><span class="feature-status live">LIVE</span><span class="feature-toggle">+</span></div>
+      </div>
+      <div class="feature-body">
+        <p>The Auto-Invest engine executes <strong>Dollar-Cost Averaging (DCA)</strong> into BTC, ETH, SOL, and other assets automatically. Trades execute via DEX aggregators to guarantee best-price execution. All assets are held in the user's personal vault — fully non-custodial.</p>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>Features</h5>
+            <ul>
+              <li>Automated DCA into any supported asset</li>
+              <li>Executes via DEX aggregators for best price</li>
+              <li>Assets stored in user-owned, non-custodial vaults</li>
+              <li>Rule-based investing — trigger on dips, rebalance monthly</li>
+              <li>Portfolio tracking in unified dashboard</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>Supported Assets</h5>
+            <ul>
+              <li>Bitcoin (BTC)</li>
+              <li>Ethereum (ETH)</li>
+              <li>Solana (SOL)</li>
+              <li>Stablecoins (USDC, USDT)</li>
+              <li>Additional assets — expanding Q3 2026</li>
+            </ul>
+          </div>
+        </div>
+        <div class="code-label">SIP Rule Example</div>
+        <div class="code-block">
+<span class="c">// Auto-invest 20% of salary into BTC on arrival</span>
+<span class="k">await</span> flow.rules.create({
+  trigger: { event: <span class="s">'salary.received'</span> },
+  actions: [
+    { type: <span class="s">'invest'</span>, asset: <span class="s">'BTC'</span>, pct: 20, via: <span class="s">'dex-aggregator'</span> }
+  ]
+})
+        </div>
+      </div>
+    </div>
+
+    <!-- IDENTITY -->
+    <div class="feature-block" id="identity">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-num">04</span><span class="feature-title">Identity + Credit Layer</span></div>
+        <div style="display:flex;align-items:center;gap:1rem"><span class="feature-status soon">Q3 2026</span><span class="feature-toggle">+</span></div>
+      </div>
+      <div class="feature-body">
+        <p>RialOS's most technically differentiated module. The identity layer builds a <strong>live on-chain credit profile</strong> from three data sources: verifiable payroll history (from the RialOS Payroll Engine), real-world credit data fetched natively by Rialo smart contracts (no third-party oracle), and behavioral repayment data from the platform.</p>
+        <p>This enables <strong>trust-based finance</strong> instead of collateral-based — the first truly undercollateralized lending system that doesn't rely on overcollateralization or oracle risk.</p>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>Credit Profile Sources</h5>
+            <ul>
+              <li>On-chain payroll history from RialOS</li>
+              <li>Web-fetched credit bureau data via Rialo HTTPS calls</li>
+              <li>EMI repayment behavior and track record</li>
+              <li>Employment verification credentials</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>Verifiable Credentials</h5>
+            <ul>
+              <li>Proof of income (on-chain payroll record)</li>
+              <li>Proof of employment (verifiable credential)</li>
+              <li>KYC verification (stored on Rialo)</li>
+              <li>Credit score (rebuilt per transaction)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="coming-badge">Coming Q3 2026</div>
+      </div>
+    </div>
+
+    <!-- TREASURY -->
+    <div class="feature-block" id="treasury">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-num">05</span><span class="feature-title">Corporate Treasury Suite</span></div>
+        <div style="display:flex;align-items:center;gap:1rem"><span class="feature-status beta">BETA</span><span class="feature-toggle">+</span></div>
+      </div>
+      <div class="feature-body">
+        <p>A full <strong>CFO dashboard on-chain</strong>. Corporate treasuries can hold assets in smart vaults, earn yield automatically, manage multi-sig authorization for large transfers, and get real-time liquidity forecasting based on payroll obligations.</p>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>Vault Features</h5>
+            <ul>
+              <li>Smart treasury vaults with auto-yield strategies</li>
+              <li>Multi-sig with role-based access controls</li>
+              <li>Payroll forecasting and liquidity alerts</li>
+              <li>Automatic vendor payment scheduling</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>CFO Dashboard</h5>
+            <ul>
+              <li>Real-time treasury balance and runway</li>
+              <li>Payroll obligation calendar</li>
+              <li>Yield earned from staking</li>
+              <li>Full audit log export for accounting</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECURRING PAYMENTS -->
+    <div class="feature-block" id="recurring">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-num">06</span><span class="feature-title">Recurring Payments Engine</span></div>
+        <div style="display:flex;align-items:center;gap:1rem"><span class="feature-status soon">Q3 2026</span><span class="feature-toggle">+</span></div>
+      </div>
+      <div class="feature-body">
+        <p>RialOS is the <strong>"Stripe for crypto subscriptions"</strong> — enabling automated recurring payments for SaaS billing, rent, insurance premiums, and any regular obligation. Smart contracts handle execution natively on Rialo's scheduling layer.</p>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>Use Cases</h5>
+            <ul>
+              <li>SaaS subscription billing</li>
+              <li>Rent and utility payments</li>
+              <li>Insurance premium automation</li>
+              <li>DAO contributor compensation</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>Smart Features</h5>
+            <ul>
+              <li>Auto-pause if wallet balance is insufficient</li>
+              <li>Resume on next salary arrival</li>
+              <li>Retry logic built into the contract</li>
+              <li>Notifications before and after each payment</li>
+            </ul>
+          </div>
+        </div>
+        <div class="coming-badge">Coming Q3 2026</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="doc-divider"></div>
+
+  <!-- ══ RULES ENGINE ══════════════════════════════════ -->
+  <div class="doc-section" id="rules">
+    <div class="doc-section-label">04 / Automation</div>
+    <h2>Rules Engine</h2>
+    <p>The automation rules engine is RialOS's most powerful feature. Rules are defined in a human-readable DSL and compiled to <strong>persistent on-chain listeners</strong> on Rialo — not off-chain bots or cron jobs. Once deployed, a rule runs forever unless explicitly cancelled.</p>
+
+    <div id="triggers">
+      <div class="info-box orange">
+        <span class="info-label">On-Chain Native</span>
+        Rules use Rialo's native async execution — spanning multiple blocks — to chain actions without any external infrastructure. There are no keeper networks, no scheduled Lambda functions, no middleware.
+      </div>
+      <p style="margin-top:1.2rem"><strong>Available triggers:</strong> salary.received, balance.below, price.drop, price.rise, date.scheduled, payment.received, loan.repayment.due, treasury.low</p>
+      <p><strong>Available actions:</strong> invest, repay, transfer, notify, pause, resume, dca, swap, stake, alert</p>
+      <div class="code-label">Rule Examples</div>
+      <div class="code-block">
+<span class="c">// Rule 1: Route salary on arrival</span>
+<span class="k">await</span> flow.rules.create({
+  name:    <span class="s">'Salary Router'</span>,
+  trigger: { event: <span class="s">'salary.received'</span> },
+  actions: [
+    { type: <span class="s">'invest'</span>, asset: <span class="s">'BTC'</span>, pct: 20 },
+    { type: <span class="s">'repay'</span>,  loan: <span class="s">'loan_abc123'</span>, pct: 10 },
+    { type: <span class="s">'notify'</span>, channel: <span class="s">'whatsapp'</span>, msg: <span class="s">'Salary arrived and routed'</span> }
+  ],
+  gas: <span class="s">'stake-funded'</span>
+})
+
+<span class="c">// Rule 2: Buy the dip</span>
+<span class="k">await</span> flow.rules.create({
+  name:    <span class="s">'Dip Buyer'</span>,
+  trigger: { event: <span class="s">'price.drop'</span>, asset: <span class="s">'BTC'</span>, threshold: 10 },
+  actions: [
+    { type: <span class="s">'dca'</span>, asset: <span class="s">'BTC'</span>, amount: 200, currency: <span class="s">'USDC'</span> }
+  ]
+})
+
+<span class="c">// Rule 3: Treasury liquidity guard</span>
+<span class="k">await</span> flow.rules.create({
+  name:    <span class="s">'Liquidity Guard'</span>,
+  trigger: { event: <span class="s">'treasury.low'</span>, days_runway: 30 },
+  actions: [
+    { type: <span class="s">'pause'</span>, target: <span class="s">'vendorPayments'</span> },
+    { type: <span class="s">'alert'</span>, recipient: <span class="s">'cfo'</span>, priority: <span class="s">'URGENT'</span> }
+  ]
+})
+      </div>
+    </div>
+
+    <div id="gas">
+      <h4 style="font-size:1.1rem;margin:2rem 0 .8rem">Gas &amp; Economics</h4>
+      <p>RialOS uses Rialo's <strong>Stake-for-Service</strong> model. When a company or user stakes assets into the RialOS protocol, the yield from staking is automatically used to cover all gas costs for rule execution and transaction fees. This means:</p>
+      <div class="feature-cols">
+        <div class="feature-col">
+          <h5>What this means for users</h5>
+          <ul>
+            <li>Run thousands of automation rules with zero manual gas top-ups</li>
+            <li>Payroll disbursement costs are fully covered</li>
+            <li>SIP executions, EMI deductions — all zero-cost to the user</li>
+            <li>Staking also earns yield on top of covering costs</li>
+          </ul>
+        </div>
+        <div class="feature-col">
+          <h5>What this means for companies</h5>
+          <ul>
+            <li>Treasury assets staked = operational costs auto-covered</li>
+            <li>No manual gas wallet management</li>
+            <li>Predictable, auditable cost structure</li>
+            <li>Excess yield flows back to treasury</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-divider"></div>
+
+  <!-- ══ ADDITIONAL MODULES ════════════════════════════ -->
+  <div class="doc-section" id="crossborder">
+    <div class="doc-section-label">05 / Additional Modules</div>
+    <h2>Additional Modules</h2>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-num">07</span><span class="feature-title">Cross-Border Payroll</span></div>
+        <div style="display:flex;align-items:center;gap:1rem"><span class="feature-status live">LIVE</span><span class="feature-toggle">+</span></div>
+      </div>
+      <div class="feature-body">
+        <p>Pay global teams <strong>instantly in stablecoins</strong>. No SWIFT. No correspondent banks. No 3–5 day delays. No $25–45 wire fees. RialOS supports 180+ countries with instant settlement on Rialo.</p>
+        <p>Employees in any country receive salary via email or phone — they don't need a crypto wallet, bank account, or even internet banking. Rialo handles the identity and custody layer natively.</p>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>Key Benefits</h5>
+            <ul>
+              <li>Instant settlement — no T+2/T+3 delays</li>
+              <li>180+ countries supported</li>
+              <li>No correspondent bank fees</li>
+              <li>Email/phone onboarding — no wallet needed</li>
+              <li>Automatic FX conversion where required</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>Compared to SWIFT</h5>
+            <ul>
+              <li>Settlement: 0.4s vs 3–5 business days</li>
+              <li>Fee per transfer: ~$0 vs $25–45</li>
+              <li>Intermediaries: 0 vs 2–4 banks</li>
+              <li>Transparency: full on-chain trail vs opaque</li>
+              <li>Failure rate: near-zero vs 2–5%</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-block" id="tax">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-num">08</span><span class="feature-title">Tax &amp; Compliance Layer</span></div>
+        <div style="display:flex;align-items:center;gap:1rem"><span class="feature-status soon">Q4 2026</span><span class="feature-toggle">+</span></div>
+      </div>
+      <div class="feature-body">
+        <p>Every transaction on RialOS is logged immutably on-chain. The compliance layer transforms this data into <strong>auto-generated tax reports, audit logs, and accounting exports</strong> — no manual reconciliation required.</p>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>Features</h5>
+            <ul>
+              <li>Auto-generated tax reports per jurisdiction</li>
+              <li>Audit-ready logs with full transaction history</li>
+              <li>Export to CSV, PDF, and accounting tools</li>
+              <li>Multi-jurisdiction support (expanding)</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>Integrations (planned)</h5>
+            <ul>
+              <li>QuickBooks and Xero export</li>
+              <li>SAP and NetSuite API connections</li>
+              <li>Custom webhook for accounting platforms</li>
+              <li>Auditor access portal with read-only view</li>
+            </ul>
+          </div>
+        </div>
+        <div class="coming-badge">Coming Q4 2026</div>
+      </div>
+    </div>
+
+    <div class="feature-block" id="insurance">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-num">09</span><span class="feature-title">Insurance &amp; Protection</span></div>
+        <div style="display:flex;align-items:center;gap:1rem"><span class="feature-status soon">Q4 2026</span><span class="feature-toggle">+</span></div>
+      </div>
+      <div class="feature-body">
+        <p>RialOS uses <strong>on-chain mutual protection pools</strong> funded by a portion of yield from all treasury and investment vaults. When a loan defaults, the pool covers exposure automatically — no human adjudication, no insurance company, no delay.</p>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>Protection Types</h5>
+            <ul>
+              <li>Loan default protection pools</li>
+              <li>Salary protection buffers (income gap coverage)</li>
+              <li>Smart contract insurance for protocol risk</li>
+              <li>Treasury drawdown protection</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>How Pools Work</h5>
+            <ul>
+              <li>A % of staking and vault yield funds the pool</li>
+              <li>Smart contract monitors loan health continuously</li>
+              <li>Default triggers automatic pool payout</li>
+              <li>No claims process — fully automated</li>
+            </ul>
+          </div>
+        </div>
+        <div class="coming-badge">Coming Q4 2026</div>
+      </div>
+    </div>
+
+    <div class="feature-block" id="notifications">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-num">10</span><span class="feature-title">Notification Layer</span></div>
+        <div style="display:flex;align-items:center;gap:1rem"><span class="feature-status live">LIVE</span><span class="feature-toggle">+</span></div>
+      </div>
+      <div class="feature-body">
+        <p>RialOS bridges Web3 events to Web2 channels — so you never miss a critical financial event, and you never have to check a blockchain explorer. Every trigger, rule execution, payment, or alert reaches you instantly on the channels you already use.</p>
+        <div class="feature-cols">
+          <div class="feature-col">
+            <h5>Channels</h5>
+            <ul>
+              <li>WhatsApp (recommended)</li>
+              <li>Email (all providers)</li>
+              <li>Telegram</li>
+              <li>Webhook (for custom integrations)</li>
+              <li>In-app dashboard notifications</li>
+            </ul>
+          </div>
+          <div class="feature-col">
+            <h5>Event Types</h5>
+            <ul>
+              <li>Salary received / disbursed</li>
+              <li>Rule triggered and executed</li>
+              <li>Investment executed</li>
+              <li>EMI deducted</li>
+              <li>Low balance / liquidity warnings</li>
+              <li>Loan approved or repaid</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="doc-divider"></div>
+
+  <!-- ══ SDK & API ══════════════════════════════════════ -->
+  <div class="doc-section" id="sdk">
+    <div class="doc-section-label">06 / Developers</div>
+    <h2>SDK Quickstart</h2>
+    <p>The RialOS SDK wraps all Rialo smart contract interactions and exposes a clean TypeScript API. It handles wallet abstraction, transaction signing, event listening, and rule compilation automatically.</p>
+
+    <div class="code-label">Installation</div>
+    <div class="code-block">npm install @rialos/sdk</div>
+
+    <div class="code-label">Initialization</div>
+    <div class="code-block">
+<span class="k">import</span> { RialOS } <span class="k">from</span> <span class="s">'@rialos/sdk'</span>
+
+<span class="k">const</span> flow = <span class="k">new</span> RialOS({
+  apiKey:  <span class="s">'ff_live_xxxxxxxxxxxx'</span>,   <span class="c">// from your dashboard</span>
+  network: <span class="s">'rialo-mainnet'</span>,          <span class="c">// or 'rialo-testnet'</span>
+  mode:    <span class="s">'corporate'</span>               <span class="c">// or 'individual'</span>
+})
+
+<span class="k">await</span> flow.connect()
+console.log(flow.status) <span class="c">// { connected: true, network: 'rialo-mainnet' }</span>
+    </div>
+
+    <div id="api">
+      <h4 style="font-size:1.1rem;margin:2rem 0 .8rem">API Reference</h4>
+      <table class="param-table">
+        <thead><tr><th>Method</th><th>Module</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>flow.payroll.disburse()</td><td>Payroll</td><td>Disburse salary to one or many employees</td></tr>
+          <tr><td>flow.payroll.stream()</td><td>Payroll</td><td>Start real-time per-second salary streaming</td></tr>
+          <tr><td>flow.payroll.pause()</td><td>Payroll</td><td>Pause active salary stream</td></tr>
+          <tr><td>flow.lending.apply()</td><td>Lending</td><td>Apply for a loan or credit line</td></tr>
+          <tr><td>flow.lending.repay()</td><td>Lending</td><td>Manually trigger a loan repayment</td></tr>
+          <tr><td>flow.invest.sip()</td><td>Invest</td><td>Schedule a recurring DCA investment</td></tr>
+          <tr><td>flow.invest.dca()</td><td>Invest</td><td>Execute a one-time DCA buy</td></tr>
+          <tr><td>flow.rules.create()</td><td>Automation</td><td>Deploy a new on-chain automation rule</td></tr>
+          <tr><td>flow.rules.list()</td><td>Automation</td><td>List all active rules for a wallet</td></tr>
+          <tr><td>flow.rules.cancel()</td><td>Automation</td><td>Cancel and remove an active rule</td></tr>
+          <tr><td>flow.treasury.vault()</td><td>Treasury</td><td>Access treasury vault data and controls</td></tr>
+          <tr><td>flow.identity.score()</td><td>Identity</td><td>Fetch on-chain credit score for a wallet</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="webhooks">
+      <h4 style="font-size:1.1rem;margin:2rem 0 .8rem">Webhooks</h4>
+      <p>Register a webhook URL in your dashboard to receive HTTP POST events for every RialOS action. Webhook payloads are signed with your API secret for verification.</p>
+      <div class="code-label">Webhook Payload Example</div>
+      <div class="code-block">
+{
+  <span class="s">"event"</span>:     <span class="s">"salary.disbursed"</span>,
+  <span class="s">"timestamp"</span>: <span class="s">"2026-04-30T12:00:00Z"</span>,
+  <span class="s">"data"</span>: {
+    <span class="s">"employee_id"</span>: <span class="s">"emp_001"</span>,
+    <span class="s">"amount"</span>:      5000,
+    <span class="s">"currency"</span>:    <span class="s">"USDC"</span>,
+    <span class="s">"tx_hash"</span>:     <span class="s">"0xabc123..."</span>,
+    <span class="s">"settled"</span>:     <span class="k">true</span>
+  },
+  <span class="s">"signature"</span>:  <span class="s">"sha256=xxxx"</span>
+}
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-divider"></div>
+
+  <!-- FAQ -->
+  <div class="doc-section" id="faq">
+    <div class="doc-section-label">07 / FAQ</div>
+    <h2>Frequently Asked</h2>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-title">Do employees need a crypto wallet?</span></div>
+        <span class="feature-toggle">+</span>
+      </div>
+      <div class="feature-body">
+        <p>No. Rialo's native identity layer allows employees to receive salary via email or phone number. RialOS handles wallet creation transparently in the background. Employees never need to manage a seed phrase, MetaMask, or any crypto tooling.</p>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-title">Who covers gas fees for automation?</span></div>
+        <span class="feature-toggle">+</span>
+      </div>
+      <div class="feature-body">
+        <p>Gas fees are covered automatically via Rialo's Stake-for-Service model. When you stake assets into RialOS vaults, the staking yield pays for all gas — payroll, SIPs, EMIs, and rule executions. You never need to top up a gas wallet.</p>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-title">How is the credit score calculated?</span></div>
+        <span class="feature-toggle">+</span>
+      </div>
+      <div class="feature-body">
+        <p>The on-chain credit score is assembled from three verifiable sources: your RialOS payroll history (how long, how consistently), real-world credit bureau data fetched natively by Rialo smart contracts (no oracle), and your repayment behavior within the platform. The score updates with every relevant on-chain event.</p>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-title">Is RialOS non-custodial?</span></div>
+        <span class="feature-toggle">+</span>
+      </div>
+      <div class="feature-body">
+        <p>Yes. All assets in investment vaults and personal accounts are held in user-owned smart contract vaults on Rialo. RialOS never takes custody of funds. The protocol has no ability to seize, freeze, or redirect assets without rule-based authorization from the wallet owner.</p>
+      </div>
+    </div>
+
+    <div class="feature-block">
+      <div class="feature-header" onclick="toggleFeature(this)">
+        <div class="feature-header-left"><span class="feature-title">What currencies are supported?</span></div>
+        <span class="feature-toggle">+</span>
+      </div>
+      <div class="feature-body">
+        <p>Payroll and lending operate in USDC and USDT. Investment vaults support BTC, ETH, SOL, and expanding assets. Automatic FX conversion is available for employees in countries where stablecoin direct holding is restricted — handled via partner liquidity layers.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="doc-divider"></div>
+
+  <!-- FOOTER NOTE -->
+  <div class="docs-footer-note">
+    <h4>Documentation is a living document</h4>
+    <p>RialOS is actively being built. This documentation reflects the current state of the protocol as of <span>April 2026</span>. As new modules ship, new features are added, and the platform evolves — this documentation will be updated accordingly.</p>
+    <p style="margin-top:.8rem">If you spot something outdated, have questions, or want to suggest additions — reach us at <span>hello@rialos.xyz</span> or join the <span>Discord community</span>.</p>
+    <div class="update-date">Last updated: April 30, 2026 · v1.0 · Built on Rialo L1</div>
+  </div>
+
+</div><!-- /docs-content -->
+</div><!-- /docs-layout -->
+
+
+
+<script>
+// Toggle feature blocks (global so onclick= works)
+function toggleFeature(header) {
+  const block = header.closest('.feature-block');
+  block.classList.toggle('open');
+}
+
+// Sidebar search filter (global so oninput= works)
+function filterSidebar(query) {
+  const q = query.toLowerCase().trim();
+  const overlay = document.getElementById('docsOverlay');
+  overlay.querySelectorAll('.sidebar-link').forEach(link => {
+    const text = link.textContent.toLowerCase();
+    link.style.display = (!q || text.includes(q)) ? '' : 'none';
+  });
+}
+
+// Overlay-scoped sidebar scroll & active tracking
+(function() {
+  const overlay = document.getElementById('docsOverlay');
+  const overlayLinks = overlay.querySelectorAll('.sidebar-link');
+  const ids = ['intro','how-it-works','architecture','payroll','lending','invest','identity','treasury','recurring','rules','triggers','gas','crossborder','tax','insurance','notifications','sdk','api','webhooks','faq'];
+
+  // Smooth scroll inside overlay
+  overlayLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      const id = link.getAttribute('href').slice(1);
+      const el = overlay.querySelector('#' + id);
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({behavior:'smooth'});
+      }
+    });
+  });
+
+  // Active link tracking on overlay scroll
+  overlay.addEventListener('scroll', function() {
+    let current = ids[0];
+    const scrollY = overlay.scrollTop + 90;
+    ids.forEach(id => {
+      const el = overlay.querySelector('#' + id);
+      if (el && el.offsetTop <= scrollY) current = id;
+    });
+    overlayLinks.forEach(link => {
+      const href = link.getAttribute('href').replace('#','');
+      link.classList.toggle('active', href === current);
+    });
+  }, {passive:true});
+})();
+</script>
+</div>
+
+<script>
+// Reveal on scroll
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)} });
+}, {threshold:0.08});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-scale').forEach(el => obs.observe(el));
+
+// Scroll progress bar
+const scrollProgress = document.getElementById('scrollProgress');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  if(scrollProgress) scrollProgress.style.width = pct + '%';
+}, {passive:true});
+
+// Nav scroll border
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  nav.style.borderBottomColor = window.scrollY > 40 ? 'rgba(242,92,5,0.14)' : 'rgba(245,240,234,0.06)';
+}, {passive:true});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    if(!id) return;
+    const el = document.getElementById(id);
+    if(el){e.preventDefault();el.scrollIntoView({behavior:'smooth'})}
+  });
+});
+
+// Waitlist submission
+function handleWaitlist() {
+  const input = document.getElementById('emailInput');
+  const email = input.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    input.style.border = '1px solid var(--orange)';
+    input.placeholder = 'Please enter a valid email address';
+    setTimeout(() => { input.style.border = ''; input.placeholder = 'your@company.com'; }, 2500);
+    return;
+  }
+  document.getElementById('launch-form-wrap').style.display = 'none';
+  const toast = document.getElementById('confirmToast');
+  toast.classList.add('show');
+  toast.style.animation = 'fadeUp .6s ease forwards';
+}
+
+// Docs overlay
+function openDocs() {
+  const overlay = document.getElementById('docsOverlay');
+  overlay.style.display = 'block';
+  overlay.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+function closeDocs() {
+  document.getElementById('docsOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// Allow enter key
+document.getElementById('emailInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') handleWaitlist();
+});
+
+// ANIMATED STAT COUNTERS
+(function() {
+  const statBoxes = document.querySelectorAll('.stat-box');
+  const counterObs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const numEl = entry.target.querySelector('.num');
+        if (!numEl || entry.target.dataset.counted) return;
+        entry.target.dataset.counted = '1';
+        numEl.style.animation = 'countUp .6s ease forwards, shimmer 4s linear infinite';
+        counterObs.unobserve(entry.target);
+      }
+    });
+  }, {threshold: 0.5});
+  statBoxes.forEach(b => counterObs.observe(b));
+})();
+
+// MAGNETIC HOVER on buttons
+(function() {
+  document.querySelectorAll('.btn-primary, .btn-nav, .btn-docs-primary').forEach(btn => {
+    btn.addEventListener('mousemove', function(e) {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      btn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+    });
+    btn.addEventListener('mouseleave', function() {
+      btn.style.transform = '';
+      btn.style.transition = 'transform .4s cubic-bezier(0.22,1,0.36,1)';
+      setTimeout(() => { btn.style.transition = ''; }, 400);
+    });
+  });
+})();
+
+// TICKER PAUSE ON HOVER
+(function() {
+  const ticker = document.querySelector('.ticker-inner');
+  if (!ticker) return;
+  const tickerWrap = ticker.parentElement;
+  tickerWrap.addEventListener('mouseenter', () => { ticker.style.animationPlayState = 'paused'; });
+  tickerWrap.addEventListener('mouseleave', () => { ticker.style.animationPlayState = 'running'; });
+})();
+
+
+
+// THEME TOGGLE
+(function(){
+  const btn = document.getElementById('themeToggle');
+  const icon = btn ? btn.querySelector('.theme-icon') : null;
+  const saved = localStorage.getItem('rialos-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  if(icon) icon.textContent = saved === 'light' ? '●' : '◐';
+  if(btn) btn.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('rialos-theme', next);
+    if(icon) icon.textContent = next === 'light' ? '●' : '◐';
+  });
+})();
+
+// VIDEO PARALLAX ON SCROLL
+(function() {
+  const heroBg = document.querySelector('.hero-video-bg');
+  const heroVideo = document.getElementById('heroBgVideo');
+  const hero = document.querySelector('.hero');
+  if (!heroBg || !hero) return;
+
+  let ticking = false;
+  let currentY = 0;
+  let targetY = 0;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function updateParallax() {
+    const scrollY = window.scrollY;
+    const heroH = hero.offsetHeight;
+    const progress = Math.min(scrollY / heroH, 1);
+    // Video moves up to 18% of its height as user scrolls
+    targetY = progress * 18;
+    ticking = false;
+  }
+
+  function animateParallax() {
+    currentY = lerp(currentY, targetY, 0.07);
+    if (heroBg) {
+      heroBg.style.transform = `translateY(${currentY}%)`;
+    }
+    requestAnimationFrame(animateParallax);
+  }
+
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(updateParallax);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  animateParallax();
+
+  // Fade in video smoothly on load
+  if (heroVideo) {
+    heroVideo.addEventListener('canplay', function() {
+      heroVideo.style.opacity = '0.38';
+    });
+  }
+})();
+
+</script>
+</body>
+</html>
